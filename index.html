@@ -323,8 +323,8 @@
         }
         
         // Cargar ambos archivos
-        const promesaRD = cargarGeoJSON('costasRD.geojson', estiloRD, '🌿 Humedales / Manglares - República Dominicana');
-        const promesaHaiti = cargarGeoJSON('costasHAITI.geojson', estiloHaiti, '🌾 Humedales / Manglares - Haití');
+        const promesaRD = cargarGeoJSON('costasRD.geojson', estiloRD, '🌿 Humedales / Manglares / Sistemas Coralinos  - República Dominicana');
+        const promesaHaiti = cargarGeoJSON('costasHAITI.geojson', estiloHaiti, '🌾 Humedales / Manglares / Sistemas Coralinos  - Haití');
         
         // ==================== 4. CONTROL DE CAPAS (marcadores, manglares RD, manglares HAITI) ====================
         // Una vez resueltas las promesas, configuramos control de capas de manera fiable
@@ -334,14 +334,14 @@
             
             // Construir objeto de capas superpuestas exactamente como se requiere:
             // - MARCADORES
-            // - Manglares / Humedales RD
-            // - Manglares / Humedales HAITI
+            // - Manglares / Humedales / Sistemas Coralinos  RD
+            // - Manglares / Humedales / Sistemas Coralinos  HAITI
             const overlayMaps = {
                 "📍 Accidentes Costeros (Marcadores)": markerGroup
             };
             
-            if (capaRD) overlayMaps["🌿 Manglares / Humedales RD"] = capaRD;
-            if (capaHaiti) overlayMaps["🌾 Manglares / Humedales HAITI"] = capaHaiti;
+            if (capaRD) overlayMaps["🌿 Manglares / Humedales / Sistemas Coralinos RD"] = capaRD;
+            if (capaHaiti) overlayMaps["🌾 Manglares / Humedales / Sistemas Coralinos HAITI"] = capaHaiti;
             
             // Control de capas con opciones responsivas
             const layerControl = L.control.layers(null, overlayMaps, { 
@@ -367,10 +367,10 @@
             div.innerHTML = `
                 <h4>📌 Leyenda del Mapa</h4>
                 <div class="legend-item">
-                    <i style="background: #e67e22;"></i> Manglares / Humedales RD
+                    <i style="background: #e67e22;"></i> Manglares / Humedales / Sistemas Coralinos  RD
                 </div>
                 <div class="legend-item">
-                    <i style="background: #FF6699;"></i> Manglares / Humedales Haití
+                    <i style="background: #FF6699;"></i> Manglares / Humedales / Sistemas Coralinos  Haití
                 </div>
                 <div class="legend-item">
                     <span class="marker-icon">📍</span> Accidentes Costeros (Puntos)
