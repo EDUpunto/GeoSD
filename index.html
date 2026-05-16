@@ -36,7 +36,7 @@
             background-color: #a3ccff;
         }
 
-        /* Título elegante - reposicionado para móvil (esquina superior izquierda) */
+        /* === TÍTULO CENTRADO EN MÓVIL (y arriba en desktop) === */
         .map-title {
             position: absolute;
             top: 20px;
@@ -53,7 +53,7 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             border-left: 4px solid #ffb347;
             transition: all 0.2s ease;
-            max-width: 65%;
+            max-width: 70%;
         }
         .map-title h1 {
             margin: 0;
@@ -69,7 +69,7 @@
             letter-spacing: 0.3px;
         }
         
-        /* Botones flotantes en móvil (abajo a la izquierda) */
+        /* Botones flotantes inferiores */
         .buttons-container {
             position: absolute;
             bottom: 20px;
@@ -81,7 +81,7 @@
         }
         
         .edu-button, .edu2-button {
-            background: rgba(30, 60, 114, 0.7);
+            background: rgba(30, 60, 114, 0.8);
             backdrop-filter: blur(4px);
             border-radius: 40px;
             color: white;
@@ -103,7 +103,7 @@
         }
 
         .edu-button:hover, .edu2-button:hover {
-            background: rgba(15, 43, 79, 0.85);
+            background: rgba(15, 43, 79, 0.9);
             transform: scale(1.02);
             box-shadow: 0 5px 12px rgba(0,0,0,0.25);
             border-color: rgba(255,255,255,0.5);
@@ -115,41 +115,67 @@
             font-size: 0.9rem;
         }
         
-        /* === AJUSTES MÓVIL: No superposición título + control capas === */
+        /* ========== ESTILOS MÓVIL ========== */
         @media (max-width: 768px) {
             body {
                 padding: 5px;
             }
+            /* Título centrado en la parte superior */
             .map-title {
                 top: 12px;
-                left: 12px;
-                padding: 6px 12px;
-                max-width: 60%;
-                border-left: 3px solid #ffb347;
-                border-right: none;
-                background: rgba(0, 0, 0, 0.7);
+                left: 50%;
+                transform: translateX(-50%);
+                text-align: center;
+                padding: 6px 16px;
+                max-width: 85%;
+                border-left: none;
+                border-top: 3px solid #ffb347;
+                border-radius: 40px;
+                background: rgba(0, 0, 0, 0.75);
+                backdrop-filter: blur(10px);
+                white-space: nowrap;
+                overflow-x: auto;
+                overflow-y: hidden;
+                scrollbar-width: none;
+            }
+            .map-title::-webkit-scrollbar {
+                display: none;
             }
             .map-title h1 {
-                font-size: 0.8rem;
+                font-size: 0.85rem;
+                display: inline-block;
             }
             .map-title p {
                 font-size: 0.55rem;
                 margin-top: 2px;
-            }
-            
-            /* Control de zoom: ubicación fija arriba a la izquierda debajo del título */
-            .leaflet-control-zoom {
-                position: relative !important;
-                top: auto !important;
-                left: auto !important;
-                margin-top: 10px !important;
-                margin-left: 12px !important;
-                clear: both;
                 display: inline-block;
-                z-index: 900;
+                margin-left: 6px;
+            }
+            /* Ajuste para títulos largos: permitir scroll horizontal sutil */
+            .map-title {
+                white-space: normal;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
             }
             
-            /* Control de capas: siempre arriba a la derecha con suficiente margen para no tocar título */
+            /* Control de zoom: queda arriba a la izquierda, sin solaparse con título centrado */
+            .leaflet-control-zoom {
+                margin-top: 8px !important;
+                margin-left: 8px !important;
+                background: rgba(255,255,255,0.9);
+                border-radius: 30px !important;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            }
+            .leaflet-control-zoom a {
+                width: 32px !important;
+                height: 32px !important;
+                line-height: 30px !important;
+                font-size: 18px !important;
+            }
+            
+            /* Control de capas: arriba derecha más pequeño */
             .leaflet-control-layers {
                 position: absolute !important;
                 top: 12px !important;
@@ -163,25 +189,67 @@
                 border: 1px solid rgba(0,0,0,0.1);
                 backdrop-filter: blur(8px);
             }
-            
-            /* Ajuste del botón del control de capas para que sea visible */
+            /* Botón del control de capas más compacto */
             .leaflet-control-layers-toggle {
+                width: 32px !important;
+                height: 32px !important;
+                background-size: 20px 20px !important;
                 background-color: white;
-                width: 36px;
-                height: 36px;
-                border-radius: 50%;
-                background-size: 22px 22px;
+                border-radius: 50% !important;
+            }
+            /* Texto interno del control cuando está expandido (más pequeño) */
+            .leaflet-control-layers-expanded {
+                padding: 6px 10px !important;
+                font-size: 11px !important;
+                min-width: 130px;
+            }
+            .leaflet-control-layers-selector {
+                margin-top: 2px !important;
+                transform: scale(0.85);
+            }
+            .leaflet-control-layers label {
+                font-size: 11px !important;
+                font-weight: 500;
+                margin-bottom: 4px;
+                display: flex;
+                align-items: center;
+                gap: 4px;
             }
             
-            /* Escala móvil: abajo derecha */
+            /* Escala: la colocamos al mismo nivel que los botones (abajo izquierda) */
             .leaflet-control-scale {
-                bottom: 70px !important;
-                right: 10px !important;
-                left: auto !important;
+                position: absolute !important;
+                bottom: 75px !important;
+                left: 12px !important;
+                right: auto !important;
+                top: auto !important;
+                background: rgba(0,0,0,0.6) !important;
+                backdrop-filter: blur(4px);
+                padding: 4px 8px !important;
+                border-radius: 20px !important;
+                border: none !important;
+                color: white !important;
+                font-size: 10px !important;
+                font-weight: 500;
+                z-index: 1000;
+                box-shadow: 0 1px 5px rgba(0,0,0,0.2);
+            }
+            .leaflet-control-scale-line {
+                background: transparent !important;
+                border-color: #ffb347 !important;
+                color: white !important;
+                font-size: 10px !important;
+                padding: 2px 5px !important;
+                margin: 0 !important;
+                border-width: 2px !important;
+            }
+            .leaflet-control-scale-line:not(:first-child) {
+                display: none; /* Ocultamos la línea secundaria para limpieza visual */
             }
             
+            /* Botones inferiores reposicionados para que no toquen la escala */
             .buttons-container {
-                bottom: 12px;
+                bottom: 15px;
                 left: 12px;
                 gap: 8px;
                 z-index: 1001;
@@ -195,24 +263,22 @@
                 font-size: 0.8rem;
             }
             
+            /* Popups más pequeños pero legibles */
             .custom-popup .leaflet-popup-content {
-                font-size: 12px;
-                min-width: 140px;
+                font-size: 11px;
+                min-width: 130px;
             }
-
-            /* Para evitar que el zoom entre en conflicto visual */
-            .leaflet-top.leaflet-left {
-                display: flex;
-                flex-direction: column;
-                align-items: flex-start;
-                top: 12px;
-                left: 12px;
-                z-index: 950;
+            
+            /* Ajuste capas leyenda interna (tamaño pequeño) */
+            .custom-layers-legend {
+                font-size: 9px !important;
             }
-            /* Ajuste para que el control de zoom se ubique justo debajo del título */
-            .leaflet-top.leaflet-left .leaflet-control-zoom {
-                margin-top: 8px;
-                margin-left: 0;
+            .custom-layers-legend span {
+                font-size: 9px !important;
+            }
+            .custom-layers-legend i {
+                width: 14px !important;
+                height: 8px !important;
             }
         }
         
@@ -223,6 +289,11 @@
             .map-title {
                 top: 25px;
                 left: 25px;
+                transform: none;
+                text-align: left;
+                max-width: 50%;
+                border-left: 4px solid #ffb347;
+                border-top: none;
             }
             .map-title h1 { font-size: 1.8rem; }
             .map-title p { font-size: 0.8rem; }
@@ -236,19 +307,28 @@
                 font-size: 0.85rem;
                 gap: 6px;
             }
-            .edu-button span, .edu2-button span {
-                font-size: 1rem;
-            }
             .leaflet-control-layers {
                 top: 20px !important;
                 right: 20px !important;
+            }
+            /* Escala desktop posición original */
+            .leaflet-control-scale {
+                bottom: 20px !important;
+                right: 20px !important;
+                left: auto !important;
+                background: rgba(255,255,255,0.8) !important;
+                border-radius: 8px;
+            }
+            .leaflet-control-scale-line {
+                background: rgba(255,255,255,0.8) !important;
+                color: #333 !important;
             }
         }
 
         .custom-popup .leaflet-popup-content-wrapper {
             background: #2c3e50;
             color: #fff;
-            font-size: 14px;
+            font-size: 13px;
             border-radius: 8px;
             padding: 2px;
         }
@@ -260,12 +340,12 @@
             border-radius: 28px;
             border: none;
             box-shadow: 0 2px 12px rgba(0,0,0,0.2);
-            background: rgba(255,255,255,0.95);
+            background: rgba(255,255,255,0.96);
             backdrop-filter: blur(4px);
             font-family: 'Segoe UI', sans-serif;
         }
         
-        /* Ocultamos la base de capas para no saturar (solo overlays) */
+        /* Ocultamos la base de capas (innecesaria) */
         .leaflet-control-layers-base {
             display: none;
         }
@@ -274,9 +354,9 @@
         .custom-layers-legend {
             display: none;
             border-top: 1px solid #ddd;
-            margin-top: 8px;
-            padding-top: 6px;
-            font-size: 11px;
+            margin-top: 6px;
+            padding-top: 4px;
+            font-size: 10px;
             color: #2c3e50;
             text-align: center;
             font-weight: normal;
@@ -288,7 +368,7 @@
         
         .custom-layers-legend span {
             display: inline-block;
-            margin: 0 4px;
+            margin: 0 3px;
         }
     </style>
 </head>
@@ -322,22 +402,47 @@
             zoomSnap: 0.5,
             fadeAnimation: true
         }).setView(fixedCenter, initialZoom);
-
-        // Ajustar posición del control de zoom en móvil (por Leaflet se añade automáticamente a top-left)
-        // No necesitamos hacer nada extra porque Leaflet ya lo coloca en .leaflet-top.leaflet-left
         
+        // Capa base (OpenStreetMap CyclOSM)
         L.tileLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', {
             maxZoom: 18,
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> | Cyclosm'
         }).addTo(map);
-
+        
+        // Escala se añadirá después, pero modificaremos su posición con CSS personalizada para móvil.
+        // Creamos el control de escala y lo forzamos a una posición custom más tarde con CSS.
         L.control.scale({ 
             imperial: false, 
-            position: 'bottomright',
+            position: 'bottomleft',   // Para móvil lo reposicionamos vía CSS, en desktop se adapta.
             metric: true
         }).addTo(map);
-
-        // ==================== 1. MARCADORES ====================
+        
+        // Forzar en móvil que el contenedor de la escala tenga la clase modificada desde JS
+        if (isMobile) {
+            setTimeout(() => {
+                const scaleControl = document.querySelector('.leaflet-control-scale');
+                if (scaleControl) {
+                    scaleControl.style.position = 'absolute';
+                    scaleControl.style.bottom = '75px';
+                    scaleControl.style.left = '12px';
+                    scaleControl.style.right = 'auto';
+                    scaleControl.style.top = 'auto';
+                    scaleControl.style.backgroundColor = 'rgba(0,0,0,0.6)';
+                    scaleControl.style.backdropFilter = 'blur(4px)';
+                    scaleControl.style.borderRadius = '20px';
+                    scaleControl.style.padding = '2px 6px';
+                    scaleControl.style.zIndex = '1000';
+                }
+                const scaleLine = document.querySelector('.leaflet-control-scale-line');
+                if (scaleLine) {
+                    scaleLine.style.color = 'white';
+                    scaleLine.style.borderColor = '#ffb347';
+                    scaleLine.style.background = 'transparent';
+                }
+            }, 100);
+        }
+        
+        // ==================== 1. MARCADORES (Accidentes costeros) ====================
         const puntos = [
             { lat: 18.401415971261315, lng: -69.63189544985755, titulo: "Punta Caucedo" },
             { lat: 19.89410733279512, lng: -71.64999186722542, titulo: "Morro de Montecristi" },
@@ -416,7 +521,6 @@
                 marker.on('mouseover', function () { this.openPopup(); });
                 marker.on('mouseout', function () { this.closePopup(); });
             } else {
-                // En móvil, abrir popup al tocar y cerrar con toque externo (mejor UX)
                 marker.on('click', function(e) {
                     this.openPopup();
                 });
@@ -426,7 +530,7 @@
 
         puntosFiltrados.forEach(punto => agregarMarcador(punto));
 
-        // ==================== 2. CARGA DE GEOJSON ====================
+        // ==================== 2. CARGA DE GEOJSON (Manglares) ====================
         let capaRD = null;
         let capaHaiti = null;
         
@@ -472,7 +576,7 @@
         const promesaRD = cargarGeoJSON('costasRD.geojson', estiloRD, '🌿 Manglares - República Dominicana');
         const promesaHaiti = cargarGeoJSON('costasHAITI.geojson', estiloHaiti, '🌾 Manglares - Haití');
         
-        // ==================== 3. CONTROL DE CAPAS CON LEYENDA OCULTA ====================
+        // ==================== 3. CONTROL DE CAPAS CON LEYENA COMPACTA ====================
         function agregarLeyendaAlControl() {
             setTimeout(() => {
                 const layersContainer = document.querySelector('.leaflet-control-layers');
@@ -480,16 +584,16 @@
                     const legendDiv = document.createElement('div');
                     legendDiv.className = 'custom-layers-legend';
                     legendDiv.innerHTML = `
-                        <hr style="margin: 6px 0;">
-                        <div style="display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
-                            <span><i style="background:#e67e22; display:inline-block; width:18px; height:10px; border-radius:2px;"></i> Manglares RD</span>
-                            <span><i style="background:#FF6699; display:inline-block; width:18px; height:10px; border-radius:2px;"></i> Manglares Haití</span>
+                        <hr style="margin: 4px 0;">
+                        <div style="display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;">
+                            <span><i style="background:#e67e22; display:inline-block; width:16px; height:8px; border-radius:2px;"></i> Manglares RD</span>
+                            <span><i style="background:#FF6699; display:inline-block; width:16px; height:8px; border-radius:2px;"></i> Manglares Haití</span>
                             <span>📍 Marcadores</span>
                         </div>
-                        <div style="font-size: 10px; margin-top: 5px; color: #5d6d7e;">🖱️ Activa/desactiva capas</div>
+                        <div style="font-size: 8px; margin-top: 3px; color: #5d6d7e;">🖱️ Activa/desactiva</div>
                     `;
                     layersContainer.appendChild(legendDiv);
-                    console.log("✅ Leyenda añadida al control de capas (oculta hasta expandir)");
+                    console.log("✅ Leyenda compacta agregada");
                 }
             }, 200);
         }
@@ -499,13 +603,13 @@
             if (layerHaiti) capaHaiti = layerHaiti;
             
             const overlayMaps = {
-                "📍 Accidentes Costeros (Marcadores)": markerGroup
+                "📍 Accidentes Costeros": markerGroup
             };
             
-            if (capaRD) overlayMaps["🌿 Manglares / Humedales RD"] = capaRD;
-            if (capaHaiti) overlayMaps["🌾 Manglares / Humedales HAITI"] = capaHaiti;
+            if (capaRD) overlayMaps["🌿 Manglares RD"] = capaRD;
+            if (capaHaiti) overlayMaps["🌾 Manglares Haití"] = capaHaiti;
             
-            // Control de capas colapsado por defecto, en la esquina superior derecha siempre.
+            // Control de capas colapsado, en posición topright
             const layerControl = L.control.layers(null, overlayMaps, { 
                 collapsed: true,
                 position: 'topright',
@@ -513,36 +617,50 @@
             }).addTo(map);
             
             agregarLeyendaAlControl();
-            console.log("✅ Control de capas configurado - marcadores activos por defecto");
+            
+            // Ajuste extra para mobile: disminuir tamaño de fuente dentro del control cuando se expande
+            if (isMobile) {
+                setTimeout(() => {
+                    const expandedDiv = document.querySelector('.leaflet-control-layers-expanded');
+                    if (expandedDiv) {
+                        expandedDiv.style.fontSize = '10px';
+                        const labels = expandedDiv.querySelectorAll('label');
+                        labels.forEach(lbl => {
+                            lbl.style.fontSize = '10px';
+                            lbl.style.fontWeight = '500';
+                        });
+                    }
+                }, 300);
+            }
         }).catch(err => {
             console.warn("Carga parcial de GeoJSON:", err);
             const overlayMapsFallback = {
-                "📍 Accidentes Costeros (Marcadores)": markerGroup,
+                "📍 Accidentes Costeros": markerGroup,
             };
-            const fallbackControl = L.control.layers(null, overlayMapsFallback, { 
-                collapsed: true,
-                position: 'topright'
-            }).addTo(map);
+            L.control.layers(null, overlayMapsFallback, { collapsed: true, position: 'topright' }).addTo(map);
             agregarLeyendaAlControl();
         });
         
-        // Ajuste final para móvil: reordenar contenedores Leaflet para evitar conflictos visuales
-        // Esto garantiza que el título no choque con el control de capas en ningún redimensionamiento.
+        // Ajuste al redimensionar
         window.addEventListener('resize', () => {
             setTimeout(() => {
                 map.invalidateSize();
-                // Reforzar estilo en móvil si es necesario para capas
                 if (window.innerWidth < 768) {
-                    const layersCtrl = document.querySelector('.leaflet-control-layers');
-                    if (layersCtrl) {
-                        layersCtrl.style.top = '12px';
-                        layersCtrl.style.right = '12px';
+                    const scaleCtrl = document.querySelector('.leaflet-control-scale');
+                    if (scaleCtrl) {
+                        scaleCtrl.style.bottom = '75px';
+                        scaleCtrl.style.left = '12px';
+                    }
+                    const layerCtrl = document.querySelector('.leaflet-control-layers');
+                    if (layerCtrl) {
+                        layerCtrl.style.top = '12px';
+                        layerCtrl.style.right = '12px';
                     }
                 }
             }, 200);
         });
         
-        console.log("🗺️ Mapa optimizado: título y control de capas separados completamente en móvil, sin superposición.");
+        console.log("🗺️ Móvil optimizado: título centrado, zoom sin superposición, escala junto a botones, capas con texto pequeño");
     </script>
 </body>
 </html>
