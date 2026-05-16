@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Isla de Santo Domingo - Costas y Accidentes Costeros</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f9;
+            padding: 10px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin: 10px 0;
+            font-size: 1.5rem;
+        }
+
+        #map { 
+            width: 100%;
+            height: 75vh;
+            min-height: 400px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            background-color: #a3ccff;
+        }
+
+        /* Controles de capas personalizados */
+        .info-layers {
+            background: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            font-size: 14px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        .info-layers span {
+            display: inline-block;
+            width: 20px;
+            height: 3px;
+            vertical-align: middle;
+            margin-right: 6px;
+            border-radius: 2px;
+        }
+
+        /* Ajustes para escritorio */
+        @media (min-width: 768px) {
+            body { padding: 20px; }
+            h1 { font-size: 2rem; margin-bottom: 20px; }
+            #map { height: 650px; }
+        }
+
+        .custom-popup .leaflet-popup-content-wrapper {
+            background: #2c3e50;
+            color: #fff;
+            font-size: 14px;
+            border-radius: 8px;
+            padding: 2px;
+        }
+        .custom-popup .leaflet-popup-tip {
+            background: #2c3e50;
+        }
+
+        /* Leyenda fija en desktop, móvil se muestra en control */
+        .legend {
+            background: white;
+            padding: 10px 14px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        .legend h4 {
+            margin: 0 0 6px 0;
+            font-size: 14px;
+        }
+        .legend i {
+            display: inline-block;
+            width: 24px;
+            height: 12px;
+            margin-right: 6px;
+            vertical-align: middle;
+        }
+        .legend .marker-icon {
+            width: 12px;
+            height: 18px;
+            background: transparent;
+            margin-right: 8px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>🌊 Isla de Santo Domingo: Accidentes Costeros + Líneas de Costa</h1>
+    <div id="map"></div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Plugin para control de capas mejorado (opcional pero útil) -->
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+
+    <script>
+        // Determinar zoom inicial según ancho de pantalla
+        const isMobile = window.innerWidth < 768;
+        const initialZoom = isMobile ? 7 : 8;
+
+        // Inicializa el mapa centrado en la isla
+        var map = L.map('map').setView([18.8, -70.5], initialZoom);
+
+        // Capa de mapa base (Cyclosm - clara y detallada)
+        L.tileLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> | Cyclosm'
+        }).addTo(map);
+
+        // Control de escala
+        L.control.scale({ imperial: false, position: 'bottomright' }).addTo(map);
+
+        // ===================== 1. DATOS DE MARCADORES ORIGINALES =====================
+        const puntos = [
+            { lat: 18.401415971261315, lng: -69.63189544985755, titulo: "Punta Caucedo" },
+            { lat: 19.89410733279512, lng: -71.64999186722542, titulo: "Morro de Montecristi" },
+            { lat: 19.745761510527092, lng: -71.75456754175141, titulo: "Bahía de Manzanillo" },
+            { lat: 19.873004952110815, lng: -71.83363977365414, titulo: "Cayos Los Siete Hermanos" },
+            { lat: 19.87012919244153, lng: -71.30557395163945, titulo: "Cayo Arena" },
+            { lat: 19.869935349250476, lng: -71.21171195703263, titulo: "Punta Burén" },
+            { lat: 19.849205348531424, lng: -71.17269594730766, titulo: "Estero Hondo" },
+            { lat: 19.931324644015668, lng: -70.99806277941562, titulo: "Cabo Isabela" },
+            { lat: 19.900659645556697, lng: -70.94753922732326, titulo: "Bahía de Luperón" },
+            { lat: 19.83393880041659, lng: -70.77910151998599, titulo: "Bahía de Maimón" },
+            { lat: 19.80275635707941, lng: -70.70221393389002, titulo: "Bahía de Puerto Plata" },
+            { lat: 19.7522428101026, lng: -70.40173463631227, titulo: "Punta Cabarete" },
+            { lat: 19.66668837196901, lng: -69.93681029312651, titulo: "Cabo Francés Viejo" },
+            { lat: 19.38500258110248, lng: -69.76198244607639, titulo: "Bahía Escosesa" },
+            { lat: 19.26318454383689, lng: -69.50717975124323, titulo: "Península de Samaná" },
+            { lat: 19.355239356355614, lng: -69.2279235683259, titulo: "Cabo Cabrón" },
+            { lat: 19.306253430663016, lng: -69.22494107965022, titulo: "Bahía Rincón" },
+            { lat: 19.29889265602067, lng: -69.15759239449994, titulo: "Cabo Samaná" },
+            { lat: 19.166648707768736, lng: -69.2755119339007, titulo: "Cayo Levantado" },
+            { lat: 19.156847881454176, lng: -69.54679192132382, titulo: "Bahía de Samaná" },
+            { lat: 19.085368769407342, lng: -69.45219792686838, titulo: "Bahía de San Lorenzo" },
+            { lat: 19.023514779239836, lng: -69.1455251448014, titulo: "Bahía de La Gina" },
+            { lat: 19.01368023582993, lng: -68.93922228473721, titulo: "Laguna Redonda" },
+            { lat: 18.9792850619904, lng: -68.84980200842959, titulo: "Laguna del Limón" },
+            { lat: 18.97395623165452, lng: -68.77597515880271, titulo: "Punta Nisibón" },
+            { lat: 18.779398628458928, lng: -68.52739802435059, titulo: "Punta Macao" },
+            { lat: 18.651503279070845, lng: -68.37788523013502, titulo: "Laguna de Bávaro" },
+            { lat: 18.616638722806258, lng: -68.32548165449994, titulo: "Cabo Engaño" },
+            { lat: 18.348163794270047, lng: -68.4685534525929, titulo: "Cabo San Rafael" },
+            { lat: 18.362153526738698, lng: -68.59699247250697, titulo: "Bahía de Yuma" },
+            { lat: 18.21319388996826, lng: -68.64606962526226, titulo: "Punta El Algibe" },
+            { lat: 18.19524900032121, lng: -68.6378344380777, titulo: "Isla Catalinita" },
+            { lat: 18.15047240579683, lng: -68.70425645730123, titulo: "Isla Saona" },
+            { lat: 18.208995883298837, lng: -68.74976896713544, titulo: "Punta Catuano" },
+            { lat: 18.406436824199496, lng: -68.94775432831271, titulo: "Punta Águila" },
+            { lat: 18.359648082761627, lng: -69.00855679720497, titulo: "Isla Catalina" },
+            { lat: 18.43126462935202, lng: -69.60799795394897, titulo: "Bahía de Andrés" },
+            { lat: 18.2238636606466, lng: -70.23729951762026, titulo: "Punta Catalina" },
+            { lat: 18.227688115771187, lng: -70.5466620568352, titulo: "Punta Salinas" },
+            { lat: 18.22349023877843, lng: -70.53289854153572, titulo: "Bahía de Las Calderas" },
+            { lat: 18.377871154697694, lng: -70.64099620816235, titulo: "Bahía de Ocoa" },
+            { lat: 18.34962869037077, lng: -70.80272569529228, titulo: "Bahía de Jura" },
+            { lat: 18.337241556112684, lng: -70.82070601300842, titulo: "Cayo Boca Chica" },
+            { lat: 18.3421826444704, lng: -70.83599747226957, titulo: "Bahía Puerto Viejo" },
+            { lat: 18.271278364953535, lng: -71.06011134547535, titulo: "Bahía de Neiba" },
+            { lat: 17.773215659073358, lng: -71.36570983268444, titulo: "Laguna de Oviedo" },
+            { lat: 17.60934727008468, lng: -71.42395075157987, titulo: "Punta Beata" },
+            { lat: 17.58054411334642, lng: -71.51519990025173, titulo: "Isla Beata" },
+            { lat: 17.47673010733354, lng: -71.64310048712883, titulo: "Isla Alto Velo" },
+            { lat: 17.770161361705018, lng: -71.68837748932467, titulo: "Punta Ceminche" },
+            { lat: 17.90507251288631, lng: -71.67203813986372, titulo: "Cabo Rojo" },
+            { lat: 17.840256274199824, lng: -71.63372213599197, titulo: "Bahía de Las Águilas" },
+            { lat: 18.39189119735582, lng: -73.3416776906585, titulo: "Península de Tiburón" },
+            { lat: 18.078632835421335, lng: -73.62325703844466, titulo: "Isla de La Vaca" },
+            { lat: 18.618622987637483, lng: -73.73570091926777, titulo: "Isla de Cayemite" },
+            { lat: 18.83630504530466, lng: -73.0118022199312, titulo: "Isla de Gonaive" },
+            { lat: 19.163115128402698, lng: -73.05940870692616, titulo: "Golfo de Gonaive" },
+            { lat: 20.04580561027507, lng: -72.76411223048235, titulo: "Isla de La Tortuga" },
+            { lat: 19.681199070393557, lng: -71.84854563483924, titulo: "Bahía del Fuerte Libertad" }
+        ];
+
+        // Función para agregar marcadores con hover/click
+        function agregarMarcador(punto) {
+            const marker = L.marker([punto.lat, punto.lng]).addTo(map);
+            marker.bindPopup(`<strong>${punto.titulo}</strong>`, {
+                className: 'custom-popup',
+                closeButton: false,
+                autoPan: true
+            });
+            // Hover solo en escritorio
+            marker.on('mouseover', function (e) {
+                if (window.innerWidth >= 768) {
+                    this.openPopup();
+                }
+            });
+            marker.on('mouseout', function (e) {
+                if (window.innerWidth >= 768) {
+                    this.closePopup();
+                }
+            });
+        }
+
+        puntos.forEach(punto => agregarMarcador(punto));
+
+        // ===================== 2. POLÍGONO LAGUNA MALA PUNTA (original) =====================
+        const coordsLaguna = [
+            [18.397025816228303, -71.1891963283259],
+            [18.39120612443425, -71.19602418593675],
+            [18.390757270381666, -71.20573951762026],
+            [18.39893922315777, -71.2064223048235],
+            [18.39999971743388, -71.19234830842959]
+        ];
+
+        const laguna = L.polygon(coordsLaguna, {
+            color: '#3498db',
+            fillColor: '#3498db',
+            fillOpacity: 0.5,
+            weight: 2
+        }).addTo(map);
+
+        laguna.bindPopup("<strong>LAGUNA MALA PUNTA</strong>", {
+            className: 'custom-popup',
+            closeButton: false
+        });
+
+        laguna.on('mouseover', function (e) {
+            if (window.innerWidth >= 768) this.openPopup();
+        });
+        laguna.on('mouseout', function (e) {
+            if (window.innerWidth >= 768) this.closePopup();
+        });
+
+        // ===================== 3. CARGA DE ARCHIVOS GEOJSON (COSTAS HAITI y RD) =====================
+        // Variable para almacenar capas y poder mostrar/ocultar desde control de capas
+        let capaRD, capaHaiti;
+        
+        // Estilos personalizados para diferenciar costas
+        const estiloRD = {
+            color: "#e67e22",      // Naranja para República Dominicana
+            weight: 3,
+            opacity: 0.9,
+            fill: false            // Solo línea de costa (polilíneas)
+        };
+        
+        const estiloHaiti = {
+            color: "#2c3e50",      // Gris azulado para Haití
+            weight: 3,
+            opacity: 0.9,
+            fill: false
+        };
+        
+        // Función genérica para cargar GeoJSON con manejo de errores explícito
+        async function cargarGeoJSON(url, estilo, nombreCapa) {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                const data = await response.json();
+                // Verificar estructura GeoJSON
+                if (!data || (data.type !== "FeatureCollection" && data.type !== "Feature" && !data.features)) {
+                    console.warn(`${nombreCapa}: El archivo no es un GeoJSON estándar.`, data);
+                    return null;
+                }
+                // Crear capa con estilo
+                const capa = L.geoJSON(data, {
+                    style: estilo,
+                    onEachFeature: function (feature, layer) {
+                        // Agregar popup con atributos básicos si existen
+                        let contenido = `<strong>${nombreCapa}</strong>`;
+                        if (feature.properties) {
+                            if (feature.properties.NOMBRE) contenido += `<br>${feature.properties.NOMBRE}`;
+                            else if (feature.properties.name) contenido += `<br>${feature.properties.name}`;
+                            else if (feature.properties.NAME) contenido += `<br>${feature.properties.NAME}`;
+                        }
+                        layer.bindPopup(contenido, { className: 'custom-popup', closeButton: false });
+                        // Hover en escritorio para las líneas de costa
+                        layer.on('mouseover', function (e) {
+                            if (window.innerWidth >= 768) this.openPopup();
+                        });
+                        layer.on('mouseout', function (e) {
+                            if (window.innerWidth >= 768) this.closePopup();
+                        });
+                    }
+                }).addTo(map);
+                
+                console.log(`✅ ${nombreCapa} cargado correctamente desde ${url}`);
+                return capa;
+            } catch (error) {
+                console.error(`❌ Error al cargar ${nombreCapa} (${url}):`, error);
+                // Mostrar advertencia en el mapa (pequeño control de notificación)
+                if (!window.geoJSONErrors) window.geoJSONErrors = [];
+                window.geoJSONErrors.push(`${nombreCapa}: ${error.message}`);
+                return null;
+            }
+        }
+        
+        // Cargar ambos archivos
+        // Asegúrate de que los archivos costasRD.geojson y costasHAITI.geojson estén en la misma carpeta que este HTML
+        const promesaRD = cargarGeoJSON('costasRD.geojson', estiloRD, 'Costa República Dominicana');
+        const promesaHaiti = cargarGeoJSON('costasHAITI.geojson', estiloHaiti, 'Costa Haití');
+        
+        // Cuando ambas capas estén listas (o no), agregar un control de capas con los GeoJSON cargados
+        Promise.all([promesaRD, promesaHaiti]).then(([layerRD, layerHaiti]) => {
+            // Si se cargaron correctamente, guardarlas globalmente para posibles controles adicionales
+            if (layerRD) capaRD = layerRD;
+            if (layerHaiti) capaHaiti = layerHaiti;
+            
+            // Crear objeto de capas superpuestas solo con las que se cargaron exitosamente
+            const overlayMaps = {};
+            if (capaRD) overlayMaps["🌊 Costa República Dominicana"] = capaRD;
+            if (capaHaiti) overlayMaps["🌊 Costa Haití"] = capaHaiti;
+            
+            // También agregar opción para mostrar/ocultar los marcadores? No es necesario porque marcadores son capa base.
+            // Pero si se quiere un control para los accidentes costeros (marcadores), lo dejamos sin control para mantener simplicidad.
+            
+            if (Object.keys(overlayMaps).length > 0) {
+                // Control de capas (permite activar/desactivar costas)
+                L.control.layers(null, overlayMaps, { collapsed: !isMobile, position: 'topright' }).addTo(map);
+            } else {
+                // Si no se pudo cargar ninguna, mostrar mensaje en la consola y añadir nota flotante
+                const errorMsg = document.createElement('div');
+                errorMsg.className = 'info-layers';
+                errorMsg.style.position = 'absolute';
+                errorMsg.style.bottom = '30px';
+                errorMsg.style.left = '10px';
+                errorMsg.style.zIndex = '1000';
+                errorMsg.style.backgroundColor = 'rgba(220, 53, 69, 0.9)';
+                errorMsg.style.color = 'white';
+                errorMsg.style.padding = '8px 12px';
+                errorMsg.style.borderRadius = '8px';
+                errorMsg.style.fontSize = '12px';
+                errorMsg.innerHTML = '⚠️ No se pudieron cargar los archivos GeoJSON. Verifica que costasRD.geojson y costasHAITI.geojson estén en el servidor.';
+                map.getContainer().parentNode.appendChild(errorMsg);
+                setTimeout(() => errorMsg.style.opacity = '0.8', 100);
+            }
+        }).catch(err => {
+            console.warn("Problema al resolver las promesas de carga:", err);
+        });
+        
+        // ===================== 4. LEYENDA OPCIONAL (COSTAS) =====================
+        const leyendaControl = L.control({ position: 'bottomleft' });
+        leyendaControl.onAdd = function () {
+            const div = L.DomUtil.create('div', 'legend');
+            div.innerHTML = `
+                <h4>📌 Referencias</h4>
+                <i style="background: #e67e22;"></i> Costa República Dominicana<br>
+                <i style="background: #2c3e50;"></i> Costa Haití<br>
+                <span class="marker-icon">📍</span> Accidentes costeros (marcadores)<br>
+                <i style="background: #3498db; height: 12px;"></i> Laguna Mala Punta (polígono)
+            `;
+            return div;
+        };
+        leyendaControl.addTo(map);
+        
+        // Notificación de carga para depuración (si hay errores en GeoJSON se ven en consola)
+        setTimeout(() => {
+            if (window.geoJSONErrors && window.geoJSONErrors.length) {
+                console.warn("Errores al cargar GeoJSON:", window.geoJSONErrors);
+                const notif = L.control({ position: 'bottomright' });
+                notif.onAdd = function() {
+                    const div = L.DomUtil.create('div', 'info-layers');
+                    div.style.backgroundColor = '#f8d7da';
+                    div.style.color = '#721c24';
+                    div.style.border = '1px solid #f5c6cb';
+                    div.style.fontSize = '11px';
+                    div.style.maxWidth = '220px';
+                    div.innerHTML = `<strong>⚠️ Advertencia:</strong> No se cargaron algunas capas. Revisa consola F12.`;
+                    return div;
+                };
+                notif.addTo(map);
+            }
+        }, 800);
+        
+        // Ajuste extra: Si los archivos están alojados en rutas relativas o GitHub Pages, funciona bien.
+        // Para que el mapa se centre bien después de cargar los GeoJSON (opcional)
+        // No se fuerza auto-zoom porque los datos GeoJSON pueden cubrir toda la isla y ya el view está bien.
+        
+        // También agregamos funcionalidad para redimensionar mapa si cambia orientación
+        window.addEventListener('resize', () => {
+            setTimeout(() => map.invalidateSize(), 200);
+        });
+        
+        // Mensaje en consola indicando que todo está listo
+        console.log("Mapa inicializado correctamente. Marcadores + polígono + carga de costasRD.geojson y costasHAITI.geojson");
+    </script>
+</body>
+</html>
