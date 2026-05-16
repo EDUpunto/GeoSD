@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Isla de Santo Domingo - Costas y Accidentes Costeros</title>
+    <title>Isla La Española - Atlas de Accidentes Costeros y Ecosistemas de Manglar</title>
     
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -25,7 +25,15 @@
             text-align: center;
             color: #2c3e50;
             margin: 10px 0;
-            font-size: 1.5rem;
+            font-size: 1.3rem;
+        }
+
+        h1 small {
+            display: block;
+            font-size: 0.75rem;
+            color: #5d6d7e;
+            margin-top: 5px;
+            font-weight: normal;
         }
 
         #map { 
@@ -49,19 +57,11 @@
             margin-bottom: 8px;
         }
 
-        .info-layers span {
-            display: inline-block;
-            width: 20px;
-            height: 3px;
-            vertical-align: middle;
-            margin-right: 6px;
-            border-radius: 2px;
-        }
-
         /* Ajustes para escritorio */
         @media (min-width: 768px) {
             body { padding: 20px; }
             h1 { font-size: 2rem; margin-bottom: 20px; }
+            h1 small { font-size: 0.85rem; }
             #map { height: 650px; }
         }
 
@@ -76,48 +76,66 @@
             background: #2c3e50;
         }
 
-        /* Leyenda fija en desktop, móvil se muestra en control */
+        /* Leyenda */
         .legend {
             background: white;
             padding: 10px 14px;
             border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.2);
             font-size: 13px;
-            line-height: 1.5;
+            line-height: 1.6;
+            min-width: 170px;
         }
         .legend h4 {
-            margin: 0 0 6px 0;
+            margin: 0 0 8px 0;
             font-size: 14px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 4px;
         }
         .legend i {
             display: inline-block;
             width: 24px;
             height: 12px;
-            margin-right: 6px;
+            margin-right: 8px;
             vertical-align: middle;
+            border-radius: 2px;
         }
         .legend .marker-icon {
-            width: 12px;
-            height: 18px;
+            display: inline-block;
+            width: 16px;
+            height: 16px;
             background: transparent;
             margin-right: 8px;
-            font-size: 12px;
+            font-size: 14px;
+            vertical-align: middle;
+            text-align: center;
+        }
+        .legend .line {
+            display: inline-block;
+            width: 24px;
+            height: 3px;
+            margin-right: 8px;
+            vertical-align: middle;
+            border-radius: 2px;
+        }
+        .legend-item {
+            margin-bottom: 5px;
         }
     </style>
 </head>
 <body>
 
-    <h1>🌊 Isla de Santo Domingo: Accidentes Costeros + Líneas de Costa</h1>
+    <h1>
+        🗺️ Isla La Española (Santo Domingo / Haití)
+        <small>Accidentes Costeros • Manglares • Humedales Costeros</small>
+    </h1>
     <div id="map"></div>
 
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <!-- Plugin para control de capas mejorado (opcional pero útil) -->
-    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
 
     <script>
-        // Determinar zoom inicial según ancho de pantalla
+        // ==================== CONFIGURACIÓN INICIAL ====================
         const isMobile = window.innerWidth < 768;
         const initialZoom = isMobile ? 7 : 8;
 
@@ -127,13 +145,13 @@
         // Capa de mapa base (Cyclosm - clara y detallada)
         L.tileLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', {
             maxZoom: 18,
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> | Cyclosm'
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> | Cyclosm'
         }).addTo(map);
 
         // Control de escala
         L.control.scale({ imperial: false, position: 'bottomright' }).addTo(map);
 
-        // ===================== 1. DATOS DE MARCADORES ORIGINALES =====================
+        // ==================== 1. MARCADORES DE ACCIDENTES COSTEROS ====================
         const puntos = [
             { lat: 18.401415971261315, lng: -69.63189544985755, titulo: "Punta Caucedo" },
             { lat: 19.89410733279512, lng: -71.64999186722542, titulo: "Morro de Montecristi" },
@@ -197,10 +215,13 @@
             { lat: 19.681199070393557, lng: -71.84854563483924, titulo: "Bahía del Fuerte Libertad" }
         ];
 
-        // Función para agregar marcadores con hover/click
+        // Grupo de capas para los marcadores (para poder ocultarlos/mostrarlos)
+        let markerGroup = L.layerGroup().addTo(map);
+
+        // Función para agregar marcadores al grupo
         function agregarMarcador(punto) {
-            const marker = L.marker([punto.lat, punto.lng]).addTo(map);
-            marker.bindPopup(`<strong>${punto.titulo}</strong>`, {
+            const marker = L.marker([punto.lat, punto.lng]);
+            marker.bindPopup(`<strong>📍 ${punto.titulo}</strong>`, {
                 className: 'custom-popup',
                 closeButton: false,
                 autoPan: true
@@ -216,30 +237,32 @@
                     this.closePopup();
                 }
             });
+            marker.addTo(markerGroup);
         }
 
+        // Cargar todos los marcadores
         puntos.forEach(punto => agregarMarcador(punto));
 
-        // ===================== 3. CARGA DE ARCHIVOS GEOJSON (COSTAS HAITI y RD) =====================
-        // Variable para almacenar capas y poder mostrar/ocultar desde control de capas
+
+        // ==================== 3. CARGA DE ARCHIVOS GEOJSON (COSTAS / MANGIARES) ====================
         let capaRD, capaHaiti;
         
-        // Estilos personalizados para diferenciar costas
+        // Estilos personalizados para diferenciar ecosistemas costeros
         const estiloRD = {
-            color: "#e67e22",      // COLOR para República Dominicana
+            color: "#e67e22",
             weight: 3,
-            opacity: 0.9,
-            fill: false            // Solo línea de costa (polilíneas)
-        };
-        
-        const estiloHaiti = {
-            color: "#FF6699",      // COLOR para Haití
-            weight: 3,
-            opacity: 0.9,
+            opacity: 0.85,
             fill: false
         };
         
-        // Función genérica para cargar GeoJSON con manejo de errores explícito
+        const estiloHaiti = {
+            color: "#FF6699",
+            weight: 3,
+            opacity: 0.85,
+            fill: false
+        };
+        
+        // Función genérica para cargar GeoJSON
         async function cargarGeoJSON(url, estilo, nombreCapa) {
             try {
                 const response = await fetch(url);
@@ -247,24 +270,21 @@
                     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
                 const data = await response.json();
-                // Verificar estructura GeoJSON
                 if (!data || (data.type !== "FeatureCollection" && data.type !== "Feature" && !data.features)) {
                     console.warn(`${nombreCapa}: El archivo no es un GeoJSON estándar.`, data);
                     return null;
                 }
-                // Crear capa con estilo
                 const capa = L.geoJSON(data, {
                     style: estilo,
                     onEachFeature: function (feature, layer) {
-                        // Agregar popup con atributos básicos si existen
                         let contenido = `<strong>${nombreCapa}</strong>`;
                         if (feature.properties) {
                             if (feature.properties.NOMBRE) contenido += `<br>${feature.properties.NOMBRE}`;
                             else if (feature.properties.name) contenido += `<br>${feature.properties.name}`;
                             else if (feature.properties.NAME) contenido += `<br>${feature.properties.NAME}`;
+                            else if (feature.properties.Tipo) contenido += `<br>${feature.properties.Tipo}`;
                         }
                         layer.bindPopup(contenido, { className: 'custom-popup', closeButton: false });
-                        // Hover en escritorio para las líneas de costa
                         layer.on('mouseover', function (e) {
                             if (window.innerWidth >= 768) this.openPopup();
                         });
@@ -274,11 +294,10 @@
                     }
                 }).addTo(map);
                 
-                console.log(`✅ ${nombreCapa} cargado correctamente desde ${url}`);
+                console.log(`✅ ${nombreCapa} cargado desde ${url}`);
                 return capa;
             } catch (error) {
                 console.error(`❌ Error al cargar ${nombreCapa} (${url}):`, error);
-                // Mostrar advertencia en el mapa (pequeño control de notificación)
                 if (!window.geoJSONErrors) window.geoJSONErrors = [];
                 window.geoJSONErrors.push(`${nombreCapa}: ${error.message}`);
                 return null;
@@ -286,64 +305,74 @@
         }
         
         // Cargar ambos archivos
-        // Asegúrate de que los archivos costasRD.geojson y costasHAITI.geojson estén en la misma carpeta que este HTML
-        const promesaRD = cargarGeoJSON('costasRD.geojson', estiloRD, 'Costa República Dominicana');
-        const promesaHaiti = cargarGeoJSON('costasHAITI.geojson', estiloHaiti, 'Costa Haití');
+        const promesaRD = cargarGeoJSON('costasRD.geojson', estiloRD, '🌿 Humedales / Manglares - República Dominicana');
+        const promesaHaiti = cargarGeoJSON('costasHAITI.geojson', estiloHaiti, '🌾 Humedales / Manglares - Haití');
         
-        // Cuando ambas capas estén listas (o no), agregar un control de capas con los GeoJSON cargados
+        // ==================== 4. CONTROL DE CAPAS (incluye marcadores) ====================
         Promise.all([promesaRD, promesaHaiti]).then(([layerRD, layerHaiti]) => {
-            // Si se cargaron correctamente, guardarlas globalmente para posibles controles adicionales
             if (layerRD) capaRD = layerRD;
             if (layerHaiti) capaHaiti = layerHaiti;
             
-            // Crear objeto de capas superpuestas solo con las que se cargaron exitosamente
+            // Construir objeto de capas superpuestas
             const overlayMaps = {};
-            if (capaRD) overlayMaps["🌊 Costa República Dominicana"] = capaRD;
-            if (capaHaiti) overlayMaps["🌊 Costa Haití"] = capaHaiti;
             
-            // También agregar opción para mostrar/ocultar los marcadores? No es necesario porque marcadores son capa base.
-            // Pero si se quiere un control para los accidentes costeros (marcadores), lo dejamos sin control para mantener simplicidad.
+            if (capaRD) overlayMaps["🌿 Manglares RD"] = capaRD;
+            if (capaHaiti) overlayMaps["🌾 Manglares Haití"] = capaHaiti;
             
-            if (Object.keys(overlayMaps).length > 0) {
-                // Control de capas (permite activar/desactivar costas)
-                L.control.layers(null, overlayMaps, { collapsed: !isMobile, position: 'topright' }).addTo(map);
-            } else {
-                // Si no se pudo cargar ninguna, mostrar mensaje en la consola y añadir nota flotante
-                const errorMsg = document.createElement('div');
-                errorMsg.className = 'info-layers';
-                errorMsg.style.position = 'absolute';
-                errorMsg.style.bottom = '30px';
-                errorMsg.style.left = '10px';
-                errorMsg.style.zIndex = '1000';
-                errorMsg.style.backgroundColor = 'rgba(220, 53, 69, 0.9)';
-                errorMsg.style.color = 'white';
-                errorMsg.style.padding = '8px 12px';
-                errorMsg.style.borderRadius = '8px';
-                errorMsg.style.fontSize = '12px';
-                errorMsg.innerHTML = '⚠️ No se pudieron cargar los archivos GeoJSON. Verifica que costasRD.geojson y costasHAITI.geojson estén en el servidor.';
-                map.getContainer().parentNode.appendChild(errorMsg);
-                setTimeout(() => errorMsg.style.opacity = '0.8', 100);
-            }
+            // Agregar grupo de marcadores al control de capas
+            overlayMaps["📍 Accidentes Costeros (Puntos)"] = markerGroup;
+            
+            // También agregar polígono de Laguna como capa opcional (aunque siempre visible por ahora)
+            // Pero lo dejamos fuera para mantener simplicidad, o lo podemos agregar:
+            overlayMaps["💧 Laguna Mala Punta"] = laguna;
+            
+            // Crear control de capas con posición adaptativa
+            L.control.layers(null, overlayMaps, { 
+                collapsed: isMobile, 
+                position: 'topright',
+                sortLayers: true
+            }).addTo(map);
+            
+            // Mensaje de éxito
+            console.log("✅ Control de capas inicializado: puedes activar/desactivar marcadores y capas de manglares.");
         }).catch(err => {
-            console.warn("Problema al resolver las promesas de carga:", err);
+            console.warn("Problema al cargar GeoJSON:", err);
+            // Aún así, el control de capas de marcadores debe funcionar
+            const overlayMapsFallback = {
+                "📍 Accidentes Costeros (Puntos)": markerGroup,
+                "💧 Laguna Mala Punta": laguna
+            };
+            L.control.layers(null, overlayMapsFallback, { collapsed: isMobile, position: 'topright' }).addTo(map);
         });
         
-        // ===================== 4. LEYENDA OPCIONAL (COSTAS) =====================
+        // ==================== 5. LEYENDA MEJORADA ====================
         const leyendaControl = L.control({ position: 'bottomleft' });
         leyendaControl.onAdd = function () {
             const div = L.DomUtil.create('div', 'legend');
             div.innerHTML = `
-                <h4>📌 Referencias</h4>
-                <i style="background: #e67e22;"></i> Costa República Dominicana<br>
-                <i style="background: #FF6699;"></i> Costa Haití<br>
-                <span class="marker-icon">📍</span> Accidentes costeros (marcadores)<br>
-                <i style="background: #3498db; height: 12px;"></i> Laguna Mala Punta (polígono)
+                <h4>📌 Leyenda del Mapa</h4>
+                <div class="legend-item">
+                    <span class="marker-icon">📍</span> Accidentes costeros
+                </div>
+                <div class="legend-item">
+                    <i style="background: #e67e22;"></i> Manglares / Humedales RD
+                </div>
+                <div class="legend-item">
+                    <i style="background: #FF6699;"></i> Manglares / Humedales Haití
+                </div>
+                <div class="legend-item">
+                    <i style="background: #3498db; height: 12px;"></i> Laguna Mala Punta
+                </div>
+                <hr style="margin: 6px 0;">
+                <div style="font-size: 11px; color: #555;">
+                    🖱️ Pasa el cursor sobre los elementos para ver detalles
+                </div>
             `;
             return div;
         };
         leyendaControl.addTo(map);
         
-        // Notificación de carga para depuración (si hay errores en GeoJSON se ven en consola)
+        // ==================== 6. NOTIFICACIONES DE ERROR Y UTILIDADES ====================
         setTimeout(() => {
             if (window.geoJSONErrors && window.geoJSONErrors.length) {
                 console.warn("Errores al cargar GeoJSON:", window.geoJSONErrors);
@@ -354,25 +383,25 @@
                     div.style.color = '#721c24';
                     div.style.border = '1px solid #f5c6cb';
                     div.style.fontSize = '11px';
+                    div.style.padding = '6px 10px';
+                    div.style.borderRadius = '6px';
                     div.style.maxWidth = '220px';
-                    div.innerHTML = `<strong>⚠️ Advertencia:</strong> No se cargaron algunas capas. Revisa consola F12.`;
+                    div.innerHTML = `<strong>⚠️ Advertencia:</strong> No se cargaron algunos archivos GeoJSON.<br>Verifica "costasRD.geojson" y "costasHAITI.geojson"`;
                     return div;
                 };
                 notif.addTo(map);
+            } else {
+                console.log("✅ Todas las capas GeoJSON cargadas correctamente.");
             }
-        }, 800);
+        }, 1000);
         
-        // Ajuste extra: Si los archivos están alojados en rutas relativas o GitHub Pages, funciona bien.
-        // Para que el mapa se centre bien después de cargar los GeoJSON (opcional)
-        // No se fuerza auto-zoom porque los datos GeoJSON pueden cubrir toda la isla y ya el view está bien.
-        
-        // También agregamos funcionalidad para redimensionar mapa si cambia orientación
+        // Redimensionar mapa al cambiar orientación
         window.addEventListener('resize', () => {
             setTimeout(() => map.invalidateSize(), 200);
         });
         
-        // Mensaje en consola indicando que todo está listo
-        console.log("Mapa inicializado correctamente. Marcadores + polígono + carga de costasRD.geojson y costasHAITI.geojson");
+        // Mensaje final en consola
+        console.log("🗺️ Mapa de La Española inicializado. Para ocultar/mostrar marcadores, usa el control ☰ en la esquina superior derecha.");
     </script>
 </body>
 </html>
