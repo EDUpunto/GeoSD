@@ -1,5 +1,5 @@
 # CostasSD
-Costas de la isla de Santo Domingo es un módulo de la Geografía de la isla de Santo Domingo.
+Costas de la isla de Santo Domingo es un módulo educativo de la asignatura Geografía Física de la isla de Santo Domingo.
 Geografia física de la isla de Santo Domingo es un mapa interactivo basado en OSM/Leaftlet creado con fines educativos.
 Juan Ernesto De Frías para EDUpunto / edefrias@gmail.com
 Inicio 16.mayo.2026
