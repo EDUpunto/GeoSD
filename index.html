@@ -37,7 +37,7 @@
             background-color: #a3ccff;
         }
 
-        /* Título elegante dentro del mapa - reposicionado para no interferir con zoom */
+        /* Título elegante - reposicionado para móvil */
         .map-title {
             position: absolute;
             top: 20px;
@@ -120,14 +120,16 @@
         
         /* Estilos específicos para móvil */
         @media (max-width: 768px) {
-            /* Título más pequeño y reposicionado para no tocar el zoom */
+            /* Título reposicionado a la derecha para no tocar el zoom */
             .map-title {
                 top: 10px;
-                left: 10px;
-                right: auto;
+                left: auto;
+                right: 10px;
                 padding: 6px 12px;
-                max-width: 70%;
-                z-index: 1000;
+                max-width: 65%;
+                text-align: right;
+                border-left: none;
+                border-right: 3px solid #ffb347;
             }
             .map-title h1 {
                 font-size: 0.85rem;
@@ -137,32 +139,32 @@
                 margin-top: 2px;
             }
             
-            /* Re-posicionar controles de zoom para que no interfieran */
+            /* Botones de zoom en su posición original (arriba a la izquierda en móvil) */
             .leaflet-control-zoom {
-                top: auto !important;
-                bottom: 80px !important;
-                right: 10px !important;
-                left: auto !important;
+                top: 10px !important;
+                left: 10px !important;
+                right: auto !important;
+                bottom: auto !important;
             }
             
-            /* Control de capas: más compacto y en esquina superior derecha pero más abajo */
+            /* Control de capas - colapsado por defecto (solo ícono) */
             .leaflet-control-layers {
-                position: relative;
-                top: 0 !important;
-                right: 0 !important;
-                bottom: auto !important;
+                top: 10px !important;
+                right: 10px !important;
                 left: auto !important;
-                margin-top: 60px !important;
-                margin-right: 10px !important;
-                max-height: 180px;
-                overflow-y: auto;
-                background: rgba(255, 255, 255, 0.98) !important;
-                z-index: 900;
+                bottom: auto !important;
+                background: rgba(255, 255, 255, 0.95) !important;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+            }
+            
+            /* Asegurar que el control de capas esté colapsado */
+            .leaflet-control-layers-expanded {
+                max-width: 220px;
             }
             
             /* Escala reposicionada */
             .leaflet-control-scale {
-                bottom: 80px !important;
+                bottom: 70px !important;
                 right: 10px !important;
                 left: auto !important;
             }
@@ -182,9 +184,10 @@
                 font-size: 0.8rem;
             }
             
-            /* Ajuste para que el popup de capas no se salga de la pantalla */
-            .leaflet-control-layers-expanded {
-                max-width: 220px;
+            /* Popup más legible */
+            .custom-popup .leaflet-popup-content {
+                font-size: 12px;
+                min-width: 150px;
             }
         }
         
@@ -206,12 +209,6 @@
             }
             .edu-button span, .edu2-button span {
                 font-size: 1rem;
-            }
-            
-            /* En escritorio, el control de capas arriba a la derecha */
-            .leaflet-control-layers {
-                margin-top: 80px !important;
-                margin-right: 10px !important;
             }
         }
 
@@ -255,14 +252,6 @@
             display: inline-block;
             margin: 0 4px;
         }
-        
-        /* Asegurar que los popups sean legibles en móvil */
-        @media (max-width: 768px) {
-            .custom-popup .leaflet-popup-content {
-                font-size: 12px;
-                min-width: 150px;
-            }
-        }
     </style>
 </head>
 <body>
@@ -290,15 +279,10 @@
         // ==================== CONFIGURACIÓN INICIAL ====================
         const fixedCenter = [18.877136320079128, -70.85179058820196];
         const isMobile = window.innerWidth < 768;
-        // Ajuste del zoom inicial para móvil
         const initialZoom = isMobile ? 7.2 : 8.3;
         
         var map = L.map('map', {
-            zoomControl: true,
-            // Ajustar para que los controles no se solapen
-            zoomControlOptions: {
-                position: isMobile ? 'bottomright' : 'topright'
-            }
+            zoomControl: true
         }).setView(fixedCenter, initialZoom);
 
         L.tileLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', {
@@ -306,10 +290,9 @@
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> | Cyclosm'
         }).addTo(map);
 
-        // Personalizar posición de la escala
         L.control.scale({ 
             imperial: false, 
-            position: isMobile ? 'bottomright' : 'bottomright',
+            position: 'bottomright',
             metric: true
         }).addTo(map);
 
@@ -379,7 +362,7 @@
         
         const puntosFiltrados = puntos.filter(p => !p.titulo.toLowerCase().includes("laguna mala punta"));
         
-        let markerGroup = L.layerGroup().addTo(map);
+        let markerGroup = L.layerGroup().addTo(map);  // Marcadores activos por defecto
 
         function agregarMarcador(punto) {
             const marker = L.marker([punto.lat, punto.lng]);
@@ -388,7 +371,7 @@
                 closeButton: false,
                 autoPan: true
             });
-            if (window.innerWidth >= 768) {
+            if (!isMobile) {
                 marker.on('mouseover', function () { this.openPopup(); });
                 marker.on('mouseout', function () { this.closePopup(); });
             }
@@ -398,7 +381,8 @@
         puntosFiltrados.forEach(punto => agregarMarcador(punto));
 
         // ==================== 2. CARGA DE GEOJSON ====================
-        let capaRD, capaHaiti;
+        let capaRD = null;
+        let capaHaiti = null;
         
         const estiloRD = { color: "#e67e22", weight: 3, opacity: 0.85, fill: false };
         const estiloHaiti = { color: "#FF6699", weight: 3, opacity: 0.85, fill: false };
@@ -423,7 +407,7 @@
                             else if (feature.properties.Tipo) contenido += `<br>${feature.properties.Tipo}`;
                         }
                         layer.bindPopup(contenido, { className: 'custom-popup', closeButton: false });
-                        if (window.innerWidth >= 768) {
+                        if (!isMobile) {
                             layer.on('mouseover', function () { this.openPopup(); });
                             layer.on('mouseout', function () { this.closePopup(); });
                         }
@@ -439,11 +423,11 @@
             }
         }
         
-        const promesaRD = cargarGeoJSON('costasRD.geojson', estiloRD, '🌿 Humedales / Manglares - República Dominicana');
-        const promesaHaiti = cargarGeoJSON('costasHAITI.geojson', estiloHaiti, '🌾 Humedales / Manglares - Haití');
+        const promesaRD = cargarGeoJSON('costasRD.geojson', estiloRD, '🌿 Manglares - República Dominicana');
+        const promesaHaiti = cargarGeoJSON('costasHAITI.geojson', estiloHaiti, '🌾 Manglares - Haití');
         
         // ==================== 3. CONTROL DE CAPAS ====================
-        function agregarLeyendaAlControl(controlObj) {
+        function agregarLeyendaAlControl() {
             setTimeout(() => {
                 const layersContainer = document.querySelector('.leaflet-control-layers');
                 if (layersContainer && !layersContainer.querySelector('.custom-layers-legend')) {
@@ -459,91 +443,58 @@
                         <div style="font-size: 10px; margin-top: 5px; color: #5d6d7e;">🖱️ Activa/desactiva capas</div>
                     `;
                     layersContainer.appendChild(legendDiv);
-                } else if (layersContainer && layersContainer.querySelector('.custom-layers-legend')) {
-                } else {
-                    setTimeout(() => {
-                        const retryContainer = document.querySelector('.leaflet-control-layers');
-                        if (retryContainer && !retryContainer.querySelector('.custom-layers-legend')) {
-                            const legendDiv2 = document.createElement('div');
-                            legendDiv2.className = 'custom-layers-legend';
-                            legendDiv2.innerHTML = `
-                                <hr style="margin: 6px 0;">
-                                <div style="display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
-                                    <span><i style="background:#e67e22; display:inline-block; width:18px; height:10px; border-radius:2px;"></i> Manglares RD</span>
-                                    <span><i style="background:#FF6699; display:inline-block; width:18px; height:10px; border-radius:2px;"></i> Manglares Haití</span>
-                                    <span>📍 Marcadores</span>
-                                </div>
-                                <div style="font-size: 10px; margin-top: 5px;">🖱️ Activa/desactiva capas</div>
-                            `;
-                            retryContainer.appendChild(legendDiv2);
-                        }
-                    }, 200);
                 }
             }, 150);
         }
         
-        // Configurar posición del control de capas según dispositivo
-        const controlPosition = isMobile ? 'topright' : 'topright';
-        
+        // Cargar las capas GeoJSON pero NO añadirlas al mapa por defecto
         Promise.all([promesaRD, promesaHaiti]).then(([layerRD, layerHaiti]) => {
             if (layerRD) capaRD = layerRD;
             if (layerHaiti) capaHaiti = layerHaiti;
             
+            // Solo los marcadores están activos por defecto
             const overlayMaps = {
                 "📍 Accidentes Costeros (Marcadores)": markerGroup
             };
-            if (capaRD) overlayMaps["🌿 Manglares / Humedales / Sistemas Coralinos RD"] = capaRD;
-            if (capaHaiti) overlayMaps["🌾 Manglares / Humedales / Sistemas Coralinos HAITI"] = capaHaiti;
             
+            // Añadir las capas GeoJSON al control pero sin marcarlas como activas
+            if (capaRD) overlayMaps["🌿 Manglares / Humedales RD"] = capaRD;
+            if (capaHaiti) overlayMaps["🌾 Manglares / Humedales HAITI"] = capaHaiti;
+            
+            // Crear control de capas - en móvil colapsado por defecto
             const layerControl = L.control.layers(null, overlayMaps, { 
-                collapsed: isMobile, 
-                position: controlPosition,
+                collapsed: true,  // Siempre colapsado en móvil y escritorio
+                position: 'topright',
                 sortLayers: true
             }).addTo(map);
             
-            agregarLeyendaAlControl(layerControl);
-            console.log("✅ Control de capas con leyenda integrada correctamente.");
+            agregarLeyendaAlControl();
+            console.log("✅ Control de capas configurado - solo marcadores activos por defecto");
         }).catch(err => {
-            console.warn("Carga parcial de GeoJSON, control con marcadores:", err);
+            console.warn("Carga parcial de GeoJSON:", err);
             const overlayMapsFallback = {
                 "📍 Accidentes Costeros (Marcadores)": markerGroup,
             };
             const fallbackControl = L.control.layers(null, overlayMapsFallback, { 
-                collapsed: isMobile, 
-                position: controlPosition 
+                collapsed: true,
+                position: 'topright'
             }).addTo(map);
-            agregarLeyendaAlControl(fallbackControl);
+            agregarLeyendaAlControl();
         });
         
         setTimeout(() => {
             if (window.geoJSONErrors && window.geoJSONErrors.length) {
                 console.warn("Errores GeoJSON:", window.geoJSONErrors);
-                const notif = L.control({ position: 'bottomright' });
-                notif.onAdd = function() {
-                    const div = L.DomUtil.create('div', 'info-layers');
-                    div.style.backgroundColor = '#f8d7da';
-                    div.style.color = '#721c24';
-                    div.style.border = '1px solid #f5c6cb';
-                    div.style.fontSize = '11px';
-                    div.style.padding = '6px 10px';
-                    div.style.borderRadius = '6px';
-                    div.style.maxWidth = '220px';
-                    div.innerHTML = `<strong>⚠️ Advertencia:</strong> No se cargaron algunos archivos GeoJSON.<br>Verifica "costasRD.geojson" y "costasHAITI.geojson"`;
-                    return div;
-                };
-                notif.addTo(map);
             } else {
-                console.log("✅ Archivos GeoJSON disponibles o sin errores.");
+                console.log("✅ Archivos GeoJSON procesados correctamente");
             }
         }, 1000);
         
         window.addEventListener('resize', () => {
             setTimeout(() => map.invalidateSize(), 200);
-            // Recargar para ajustar controles si cambia orientación
-            location.reload();
         });
         
-        console.log("🗺️ Mapa optimizado: controles reposicionados para evitar solapamiento");
+        console.log("🗺️ Mapa optimizado: control de capas oculto, solo marcadores activos, título reposicionado");
     </script>
 </body>
 </html>
