@@ -18,7 +18,6 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f4f4f9;
-            /* Evitamos el scroll en el body para dispositivos móviles */
             overflow: hidden;
             height: 100vh;
             height: 100dvh;
@@ -71,7 +70,7 @@
         /* === CONTENEDOR INFERIOR (Botones + Escala) === */
         .bottom-controls-container {
             position: absolute;
-            bottom: 30px; /* Suficiente espacio para no ser tapado por barras móviles */
+            bottom: 30px;
             left: 20px;
             z-index: 1200;
             display: flex;
@@ -110,7 +109,7 @@
             box-shadow: 0 6px 15px rgba(0,0,0,0.5);
         }
 
-        /* Estilos para la escala de Leaflet inyectada */
+        /* Escala inyectada */
         .leaflet-control-scale {
             margin: 0 !important;
             pointer-events: auto;
@@ -121,13 +120,26 @@
             border: 1px solid #ccc !important;
         }
 
+        /* Ajustes de Popups */
+        .leaflet-popup-content {
+            margin: 15px !important;
+            line-height: 1.4;
+        }
+
+        .popup-comment {
+            display: block;
+            margin-top: 5px;
+            font-size: 0.85rem;
+            color: #555;
+            font-style: italic;
+        }
+
         /* ========== AJUSTES MÓVIL ========== */
         @media (max-width: 768px) {
             .map-title {
                 top: 15px;
                 left: 15px;
-                /* Limitamos el ancho para que no choque con el botón de capas a la derecha */
-                right: 75px; 
+                right: 20px; /* Al no haber control de capas, puede ocupar más ancho */
                 max-width: none;
                 padding: 10px 15px;
             }
@@ -136,16 +148,11 @@
             .map-title p { font-size: 0.7rem; }
 
             .bottom-controls-container {
-                bottom: 50px; /* Más arriba para evitar el área de gestos de móviles */
+                bottom: 45px;
                 left: 15px;
                 gap: 10px;
-                flex-direction: row;
-                flex-wrap: wrap; /* Permite que la escala se acomode si la pantalla es muy angosta */
+                flex-wrap: wrap;
                 width: calc(100% - 30px);
-            }
-
-            .buttons-group {
-                gap: 6px;
             }
 
             .edu-button, .edu2-button {
@@ -159,13 +166,6 @@
                 line-height: 12px !important;
             }
         }
-
-        /* Estilo para los botones de Zoom y Capas */
-        .leaflet-top.leaflet-right {
-            top: 15px;
-            right: 15px;
-        }
-
     </style>
 </head>
 <body>
@@ -183,7 +183,6 @@
             <a href="https://edupunto.com/" target="_blank" class="edu-button"><span>🌐</span> EDUPUNTO</a>
             <a href="https://docs.google.com/document/d/1WUY8rIBtC5IQcoIVGzZL9DL8FrdXgZPOiuH8uECPEFE/edit?usp=sharing" target="_blank" class="edu2-button"><span>🗒️</span> Imprimible</a>
         </div>
-        <!-- La escala se inyectará aquí a la derecha de los botones -->
     </div>
 </div>
 
@@ -193,28 +192,23 @@
     const isMobile = window.innerWidth < 768;
     const center = [18.8, -71.2];
     
-    // Inicialización del mapa sin controles por defecto
     var map = L.map('map', {
         zoomControl: false, 
         zoomSnap: 0.5
     }).setView(center, isMobile ? 7 : 8.5);
 
-    // Capa base estética
     L.tileLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', {
         maxZoom: 18,
         attribution: 'CyclOSM'
     }).addTo(map);
 
-    // Zoom en la parte superior derecha para evitar el título
     L.control.zoom({ position: 'topright' }).addTo(map);
 
-    // Control de Escala (se moverá por JS)
     const scaleControl = L.control.scale({ 
         imperial: false, 
         position: 'bottomleft' 
     }).addTo(map);
 
-    // Función para mover la escala al contenedor de botones
     function moveScale() {
         const scaleElement = document.querySelector('.leaflet-control-scale');
         const targetContainer = document.getElementById('custom-bottom-controls');
@@ -223,83 +217,82 @@
         }
     }
 
-    // Puntos de interés estáticos (Sin GeoJSON externo)
+    // Puntos con comentario independiente
     const puntos = [
-            { lat: 18.401415971261315, lng: -69.63189544985755, titulo: "Punta Caucedo" },
-            { lat: 19.89410733279512, lng: -71.64999186722542, titulo: "Morro de Montecristi" },
-            { lat: 19.745761510527092, lng: -71.75456754175141, titulo: "Bahía de Manzanillo" },
-            { lat: 19.873004952110815, lng: -71.83363977365414, titulo: "Cayos Los Siete Hermanos" },
-            { lat: 19.87012919244153, lng: -71.30557395163945, titulo: "Cayo Arena" },
-            { lat: 19.869935349250476, lng: -71.21171195703263, titulo: "Punta Burén" },
-            { lat: 19.849205348531424, lng: -71.17269594730766, titulo: "Estero Hondo" },
-            { lat: 19.931324644015668, lng: -70.99806277941562, titulo: "Cabo Isabela" },
-            { lat: 19.900659645556697, lng: -70.94753922732326, titulo: "Bahía de Luperón" },
-            { lat: 19.83393880041659, lng: -70.77910151998599, titulo: "Bahía de Maimón" },
-            { lat: 19.80275635707941, lng: -70.70221393389002, titulo: "Bahía de Puerto Plata" },
-            { lat: 19.7522428101026, lng: -70.40173463631227, titulo: "Punta Cabarete" },
-            { lat: 19.66668837196901, lng: -69.93681029312651, titulo: "Cabo Francés Viejo" },
-            { lat: 19.38500258110248, lng: -69.76198244607639, titulo: "Bahía Escosesa" },
-            { lat: 19.26318454383689, lng: -69.50717975124323, titulo: "Península de Samaná" },
-            { lat: 19.355239356355614, lng: -69.2279235683259, titulo: "Cabo Cabrón" },
-            { lat: 19.306253430663016, lng: -69.22494107965022, titulo: "Bahía Rincón" },
-            { lat: 19.29889265602067, lng: -69.15759239449994, titulo: "Cabo Samaná" },
-            { lat: 19.166648707768736, lng: -69.2755119339007, titulo: "Cayo Levantado" },
-            { lat: 19.156847881454176, lng: -69.54679192132382, titulo: "Bahía de Samaná" },
-            { lat: 19.085368769407342, lng: -69.45219792686838, titulo: "Bahía de San Lorenzo" },
-            { lat: 19.023514779239836, lng: -69.1455251448014, titulo: "Bahía de La Gina" },
-            { lat: 19.01368023582993, lng: -68.93922228473721, titulo: "Laguna Redonda" },
-            { lat: 18.9792850619904, lng: -68.84980200842959, titulo: "Laguna del Limón" },
-            { lat: 18.97395623165452, lng: -68.77597515880271, titulo: "Punta Nisibón" },
-            { lat: 18.779398628458928, lng: -68.52739802435059, titulo: "Punta Macao" },
-            { lat: 18.651503279070845, lng: -68.37788523013502, titulo: "Laguna de Bávaro" },
-            { lat: 18.616638722806258, lng: -68.32548165449994, titulo: "Cabo Engaño" },
-            { lat: 18.348163794270047, lng: -68.4685534525929, titulo: "Cabo San Rafael" },
-            { lat: 18.362153526738698, lng: -68.59699247250697, titulo: "Bahía de Yuma" },
-            { lat: 18.21319388996826, lng: -68.64606962526226, titulo: "Punta El Algibe" },
-            { lat: 18.19524900032121, lng: -68.6378344380777, titulo: "Isla Catalinita" },
-            { lat: 18.15047240579683, lng: -68.70425645730123, titulo: "Isla Saona" },
-            { lat: 18.208995883298837, lng: -68.74976896713544, titulo: "Punta Catuano" },
-            { lat: 18.406436824199496, lng: -68.94775432831271, titulo: "Punta Águila" },
-            { lat: 18.359648082761627, lng: -69.00855679720497, titulo: "Isla Catalina" },
-            { lat: 18.43126462935202, lng: -69.60799795394897, titulo: "Bahía de Andrés" },
-            { lat: 18.2238636606466, lng: -70.23729951762026, titulo: "Punta Catalina" },
-            { lat: 18.227688115771187, lng: -70.5466620568352, titulo: "Punta Salinas" },
-            { lat: 18.22349023877843, lng: -70.53289854153572, titulo: "Bahía de Las Calderas" },
-            { lat: 18.377871154697694, lng: -70.64099620816235, titulo: "Bahía de Ocoa" },
-            { lat: 18.34962869037077, lng: -70.80272569529228, titulo: "Bahía de Jura" },
-            { lat: 18.337241556112684, lng: -70.82070601300842, titulo: "Cayo Boca Chica" },
-            { lat: 18.3421826444704, lng: -70.83599747226957, titulo: "Bahía Puerto Viejo" },
-            { lat: 18.271278364953535, lng: -71.06011134547535, titulo: "Bahía de Neiba" },
-            { lat: 17.773215659073358, lng: -71.36570983268444, titulo: "Laguna de Oviedo" },
-            { lat: 17.60934727008468, lng: -71.42395075157987, titulo: "Punta Beata" },
-            { lat: 17.58054411334642, lng: -71.51519990025173, titulo: "Isla Beata" },
-            { lat: 17.47673010733354, lng: -71.64310048712883, titulo: "Isla Alto Velo" },
-            { lat: 17.770161361705018, lng: -71.68837748932467, titulo: "Punta Ceminche" },
-            { lat: 17.90507251288631, lng: -71.67203813986372, titulo: "Cabo Rojo" },
-            { lat: 17.840256274199824, lng: -71.63372213599197, titulo: "Bahía de Las Águilas" },
-            { lat: 18.178501710547327, lng: -72.54537471811965, titulo: "Cabo Jacmel" },
-            { lat: 18.39189119735582, lng: -73.3416776906585, titulo: "Península de Tiburón" },
-            { lat: 18.078632835421335, lng: -73.62325703844466, titulo: "Isla de La Vaca" },
-            { lat: 18.618622987637483, lng: -73.73570091926777, titulo: "Isla de Cayemite" },
-            { lat: 18.83630504530466, lng: -73.0118022199312, titulo: "Isla de Gonaive" },
-            { lat: 19.163115128402698, lng: -73.05940870692616, titulo: "Golfo de Gonaive" },
-            { lat: 20.04580561027507, lng: -72.76411223048235, titulo: "Isla de La Tortuga" },
-            { lat: 18.40384906773233, lng: -75.01368694612037, titulo: "Isla de Navassa" },
+            { lat: 18.401415971261315, lng: -69.63189544985755, titulo: "Punta Caucedo", comentario: "Pendiente." },
+            { lat: 19.89410733279512, lng: -71.64999186722542, titulo: "Morro de Montecristi", comentario: "Pendiente." },
+            { lat: 19.745761510527092, lng: -71.75456754175141, titulo: "Bahía de Manzanillo", comentario: "Pendiente." },
+            { lat: 19.873004952110815, lng: -71.83363977365414, titulo: "Cayos Los Siete Hermanos", comentario: "Pendiente." },
+            { lat: 19.87012919244153, lng: -71.30557395163945, titulo: "Cayo Arena", comentario: "Pendiente." },
+            { lat: 19.869935349250476, lng: -71.21171195703263, titulo: "Punta Burén", comentario: "Pendiente." },
+            { lat: 19.849205348531424, lng: -71.17269594730766, titulo: "Estero Hondo", comentario: "Pendiente." },
+            { lat: 19.931324644015668, lng: -70.99806277941562, titulo: "Cabo Isabela", comentario: "Pendiente." },
+            { lat: 19.900659645556697, lng: -70.94753922732326, titulo: "Bahía de Luperón", comentario: "Pendiente." },
+            { lat: 19.83393880041659, lng: -70.77910151998599, titulo: "Bahía de Maimón", comentario: "Pendiente." },
+            { lat: 19.80275635707941, lng: -70.70221393389002, titulo: "Bahía de Puerto Plata", comentario: "Pendiente." },
+            { lat: 19.7522428101026, lng: -70.40173463631227, titulo: "Punta Cabarete", comentario: "Pendiente." },
+            { lat: 19.66668837196901, lng: -69.93681029312651, titulo: "Cabo Francés Viejo", comentario: "Pendiente." },
+            { lat: 19.38500258110248, lng: -69.76198244607639, titulo: "Bahía Escosesa", comentario: "Pendiente." },
+            { lat: 19.26318454383689, lng: -69.50717975124323, titulo: "Península de Samaná", comentario: "Pendiente." },
+            { lat: 19.355239356355614, lng: -69.2279235683259, titulo: "Cabo Cabrón", comentario: "Pendiente." },
+            { lat: 19.306253430663016, lng: -69.22494107965022, titulo: "Bahía Rincón", comentario: "Pendiente." },
+            { lat: 19.29889265602067, lng: -69.15759239449994, titulo: "Cabo Samaná", comentario: "Pendiente." },
+            { lat: 19.166648707768736, lng: -69.2755119339007, titulo: "Cayo Levantado", comentario: "Pendiente." },
+            { lat: 19.156847881454176, lng: -69.54679192132382, titulo: "Bahía de Samaná", comentario: "Pendiente." },
+            { lat: 19.085368769407342, lng: -69.45219792686838, titulo: "Bahía de San Lorenzo", comentario: "Pendiente." },
+            { lat: 19.023514779239836, lng: -69.1455251448014, titulo: "Bahía de La Gina", comentario: "Pendiente." },
+            { lat: 19.01368023582993, lng: -68.93922228473721, titulo: "Laguna Redonda", comentario: "Pendiente." },
+            { lat: 18.9792850619904, lng: -68.84980200842959, titulo: "Laguna del Limón", comentario: "Pendiente." },
+            { lat: 18.97395623165452, lng: -68.77597515880271, titulo: "Punta Nisibón", comentario: "Pendiente." },
+            { lat: 18.779398628458928, lng: -68.52739802435059, titulo: "Punta Macao", comentario: "Pendiente." },
+            { lat: 18.651503279070845, lng: -68.37788523013502, titulo: "Laguna de Bávaro", comentario: "Pendiente." },
+            { lat: 18.616638722806258, lng: -68.32548165449994, titulo: "Cabo Engaño", comentario: "Pendiente." },
+            { lat: 18.348163794270047, lng: -68.4685534525929, titulo: "Cabo San Rafael", comentario: "Pendiente." },
+            { lat: 18.362153526738698, lng: -68.59699247250697, titulo: "Bahía de Yuma", comentario: "Pendiente." },
+            { lat: 18.21319388996826, lng: -68.64606962526226, titulo: "Punta El Algibe", comentario: "Pendiente." },
+            { lat: 18.19524900032121, lng: -68.6378344380777, titulo: "Isla Catalinita", comentario: "Pendiente." },
+            { lat: 18.15047240579683, lng: -68.70425645730123, titulo: "Isla Saona", comentario: "Pendiente." },
+            { lat: 18.208995883298837, lng: -68.74976896713544, titulo: "Punta Catuano", comentario: "Pendiente." },
+            { lat: 18.406436824199496, lng: -68.94775432831271, titulo: "Punta Águila", comentario: "Pendiente." },
+            { lat: 18.359648082761627, lng: -69.00855679720497, titulo: "Isla Catalina", comentario: "Pendiente." },
+            { lat: 18.43126462935202, lng: -69.60799795394897, titulo: "Bahía de Andrés", comentario: "Pendiente." },
+            { lat: 18.2238636606466, lng: -70.23729951762026, titulo: "Punta Catalina", comentario: "Pendiente." },
+            { lat: 18.227688115771187, lng: -70.5466620568352, titulo: "Punta Salinas", comentario: "Pendiente." },
+            { lat: 18.22349023877843, lng: -70.53289854153572, titulo: "Bahía de Las Calderas", comentario: "Pendiente." },
+            { lat: 18.377871154697694, lng: -70.64099620816235, titulo: "Bahía de Ocoa", comentario: "Pendiente." },
+            { lat: 18.34962869037077, lng: -70.80272569529228, titulo: "Bahía de Jura", comentario: "Pendiente." },
+            { lat: 18.337241556112684, lng: -70.82070601300842, titulo: "Cayo Boca Chica", comentario: "Pendiente." },
+            { lat: 18.3421826444704, lng: -70.83599747226957, titulo: "Bahía Puerto Viejo", comentario: "Pendiente." },
+            { lat: 18.271278364953535, lng: -71.06011134547535, titulo: "Bahía de Neiba", comentario: "Pendiente." },
+            { lat: 17.773215659073358, lng: -71.36570983268444, titulo: "Laguna de Oviedo", comentario: "Pendiente." },
+            { lat: 17.60934727008468, lng: -71.42395075157987, titulo: "Punta Beata", comentario: "Pendiente." },
+            { lat: 17.58054411334642, lng: -71.51519990025173, titulo: "Isla Beata", comentario: "Pendiente." },
+            { lat: 17.47673010733354, lng: -71.64310048712883, titulo: "Isla Alto Velo", comentario: "Pendiente." },
+            { lat: 17.770161361705018, lng: -71.68837748932467, titulo: "Punta Ceminche", comentario: "Pendiente." },
+            { lat: 17.90507251288631, lng: -71.67203813986372, titulo: "Cabo Rojo", comentario: "Pendiente." },
+            { lat: 17.840256274199824, lng: -71.63372213599197, titulo: "Bahía de Las Águilas", comentario: "Pendiente." },
+            { lat: 18.178501710547327, lng: -72.54537471811965, titulo: "Cabo Jacmel", comentario: "Pendiente." },
+            { lat: 18.39189119735582, lng: -73.3416776906585, titulo: "Península de Tiburón", comentario: "Pendiente." },
+            { lat: 18.078632835421335, lng: -73.62325703844466, titulo: "Isla de La Vaca", comentario: "Pendiente." },
+            { lat: 18.618622987637483, lng: -73.73570091926777, titulo: "Isla de Cayemite", comentario: "Pendiente." },
+            { lat: 18.83630504530466, lng: -73.0118022199312, titulo: "Isla de Gonaive", comentario: "Pendiente." },
+            { lat: 19.163115128402698, lng: -73.05940870692616, titulo: "Golfo de Gonaive", comentario: "Pendiente." },
+            { lat: 20.04580561027507, lng: -72.76411223048235, titulo: "Isla de La Tortuga", comentario: "Pendiente." },
+            { lat: 18.40384906773233, lng: -75.01368694612037, titulo: "Isla de Navassa", comentario: "Pendiente." },
             { lat: 19.681199070393557, lng: -71.84854563483924, titulo: "Bahía del Fuerte Libertad" }
     ];
 
-    let markerGroup = L.layerGroup().addTo(map);
-    
+    // Al haber una sola capa, los marcadores se añaden directamente al mapa
     puntos.forEach(p => {
-        const m = L.marker([p.lat, p.lng]).addTo(markerGroup);
-        m.bindPopup(`<div style="text-align:center;"><strong>📍 ${p.titulo}</strong><br><small>Accidente Costero</small></div>`);
+        const m = L.marker([p.lat, p.lng]).addTo(map);
+        const popupContent = `
+            <div style="text-align:center;">
+                <strong style="font-size:1rem;">📍 ${p.titulo}</strong>
+                <span class="popup-comment">${p.comentario}</span>
+            </div>`;
+        m.bindPopup(popupContent);
     });
 
-    // Control de Capas (Sencillo y sin GeoJSON externos)
-    const overlayMaps = { "📍 Accidentes": markerGroup };
-    L.control.layers(null, overlayMaps, { collapsed: true, position: 'topright' }).addTo(map);
-
-    // Ejecutar organización de UI
     window.addEventListener('load', () => {
         setTimeout(moveScale, 300);
     });
@@ -308,7 +301,6 @@
         map.invalidateSize();
         moveScale();
     });
-
 </script>
 </body>
 </html>
