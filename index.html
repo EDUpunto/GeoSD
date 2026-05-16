@@ -219,48 +219,20 @@
 
         puntos.forEach(punto => agregarMarcador(punto));
 
-        // ===================== 2. POLÍGONO LAGUNA MALA PUNTA (original) =====================
-        const coordsLaguna = [
-            [18.397025816228303, -71.1891963283259],
-            [18.39120612443425, -71.19602418593675],
-            [18.390757270381666, -71.20573951762026],
-            [18.39893922315777, -71.2064223048235],
-            [18.39999971743388, -71.19234830842959]
-        ];
-
-        const laguna = L.polygon(coordsLaguna, {
-            color: '#3498db',
-            fillColor: '#3498db',
-            fillOpacity: 0.5,
-            weight: 2
-        }).addTo(map);
-
-        laguna.bindPopup("<strong>LAGUNA MALA PUNTA</strong>", {
-            className: 'custom-popup',
-            closeButton: false
-        });
-
-        laguna.on('mouseover', function (e) {
-            if (window.innerWidth >= 768) this.openPopup();
-        });
-        laguna.on('mouseout', function (e) {
-            if (window.innerWidth >= 768) this.closePopup();
-        });
-
         // ===================== 3. CARGA DE ARCHIVOS GEOJSON (COSTAS HAITI y RD) =====================
         // Variable para almacenar capas y poder mostrar/ocultar desde control de capas
         let capaRD, capaHaiti;
         
         // Estilos personalizados para diferenciar costas
         const estiloRD = {
-            color: "#e67e22",      // Naranja para República Dominicana
+            color: "#e67e22",      // COLOR para República Dominicana
             weight: 3,
             opacity: 0.9,
             fill: false            // Solo línea de costa (polilíneas)
         };
         
         const estiloHaiti = {
-            color: "#2c3e50",      // Gris azulado para Haití
+            color: "#FF6699",      // COLOR para Haití
             weight: 3,
             opacity: 0.9,
             fill: false
