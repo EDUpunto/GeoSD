@@ -21,7 +21,6 @@
             padding: 10px;
         }
 
-        /* Contenedor del mapa relativo para posicionar título flotante y botones */
         .map-container {
             position: relative;
             width: 100%;
@@ -71,7 +70,6 @@
             letter-spacing: 0.3px;
         }
         
-        /* Contenedor de botones */
         .buttons-container {
             position: absolute;
             bottom: 20px;
@@ -82,7 +80,6 @@
             flex-wrap: wrap;
         }
         
-        /* Botones flotantes */
         .edu-button, .edu2-button {
             background: rgba(30, 60, 114, 0.7);
             backdrop-filter: blur(4px);
@@ -118,9 +115,7 @@
             font-size: 0.9rem;
         }
         
-        /* Estilos específicos para móvil */
         @media (max-width: 768px) {
-            /* Título reposicionado a la derecha para no tocar el zoom */
             .map-title {
                 top: 10px;
                 left: auto;
@@ -139,7 +134,6 @@
                 margin-top: 2px;
             }
             
-            /* Botones de zoom en su posición original (arriba a la izquierda en móvil) */
             .leaflet-control-zoom {
                 top: 10px !important;
                 left: 10px !important;
@@ -147,7 +141,6 @@
                 bottom: auto !important;
             }
             
-            /* Control de capas - colapsado por defecto (solo ícono) */
             .leaflet-control-layers {
                 top: 10px !important;
                 right: 10px !important;
@@ -157,12 +150,6 @@
                 box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
             }
             
-            /* Asegurar que el control de capas esté colapsado */
-            .leaflet-control-layers-expanded {
-                max-width: 220px;
-            }
-            
-            /* Escala reposicionada */
             .leaflet-control-scale {
                 bottom: 70px !important;
                 right: 10px !important;
@@ -184,14 +171,12 @@
                 font-size: 0.8rem;
             }
             
-            /* Popup más legible */
             .custom-popup .leaflet-popup-content {
                 font-size: 12px;
                 min-width: 150px;
             }
         }
         
-        /* Ajuste para escritorio */
         @media (min-width: 769px) {
             body { padding: 20px; }
             #map { height: 650px; }
@@ -223,7 +208,6 @@
             background: #2c3e50;
         }
 
-        /* Estilos para el control de capas */
         .leaflet-control-layers {
             border-radius: 12px;
             border: none;
@@ -236,10 +220,14 @@
         .leaflet-control-layers-base {
             display: none;
         }
-        .leaflet-control-layers-overlays {
-            margin-bottom: 0;
+        
+        /* La leyenda solo se muestra cuando el control está expandido */
+        .leaflet-control-layers-expanded .custom-layers-legend {
+            display: block;
         }
+        
         .custom-layers-legend {
+            display: none;
             border-top: 1px solid #ddd;
             margin-top: 8px;
             padding-top: 6px;
@@ -248,6 +236,7 @@
             text-align: center;
             font-weight: normal;
         }
+        
         .custom-layers-legend span {
             display: inline-block;
             margin: 0 4px;
@@ -261,7 +250,6 @@
         <h1>🗺️ Isla de Santo Domingo</h1>
         <p>Atlas de costas | Rep.Dominicana y Haití</p>
     </div>
-    <!-- Contenedor flexible para los botones -->
     <div class="buttons-container">
         <a href="https://edupunto.com/" target="_blank" rel="noopener noreferrer" class="edu-button">
             <span>🌐</span> EDUPUNTO
@@ -272,7 +260,6 @@
     </div>
 </div>
 
-    <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <script>
@@ -296,7 +283,7 @@
             metric: true
         }).addTo(map);
 
-        // ==================== 1. MARCADORES DE ACCIDENTES COSTEROS ====================
+        // ==================== 1. MARCADORES ====================
         const puntos = [
             { lat: 18.401415971261315, lng: -69.63189544985755, titulo: "Punta Caucedo" },
             { lat: 19.89410733279512, lng: -71.64999186722542, titulo: "Morro de Montecristi" },
@@ -362,7 +349,7 @@
         
         const puntosFiltrados = puntos.filter(p => !p.titulo.toLowerCase().includes("laguna mala punta"));
         
-        let markerGroup = L.layerGroup().addTo(map);  // Marcadores activos por defecto
+        let markerGroup = L.layerGroup().addTo(map);
 
         function agregarMarcador(punto) {
             const marker = L.marker([punto.lat, punto.lng]);
@@ -417,8 +404,6 @@
                 return capa;
             } catch (error) {
                 console.error(`❌ Error al cargar ${nombreCapa}:`, error);
-                if (!window.geoJSONErrors) window.geoJSONErrors = [];
-                window.geoJSONErrors.push(`${nombreCapa}: ${error.message}`);
                 return null;
             }
         }
@@ -426,8 +411,9 @@
         const promesaRD = cargarGeoJSON('costasRD.geojson', estiloRD, '🌿 Manglares - República Dominicana');
         const promesaHaiti = cargarGeoJSON('costasHAITI.geojson', estiloHaiti, '🌾 Manglares - Haití');
         
-        // ==================== 3. CONTROL DE CAPAS ====================
+        // ==================== 3. CONTROL DE CAPAS CON LEYENDA OCULTA ====================
         function agregarLeyendaAlControl() {
+            // Esperar a que el control de capas exista en el DOM
             setTimeout(() => {
                 const layersContainer = document.querySelector('.leaflet-control-layers');
                 if (layersContainer && !layersContainer.querySelector('.custom-layers-legend')) {
@@ -443,27 +429,25 @@
                         <div style="font-size: 10px; margin-top: 5px; color: #5d6d7e;">🖱️ Activa/desactiva capas</div>
                     `;
                     layersContainer.appendChild(legendDiv);
+                    console.log("✅ Leyenda añadida al control de capas (oculta hasta expandir)");
                 }
-            }, 150);
+            }, 200);
         }
         
-        // Cargar las capas GeoJSON pero NO añadirlas al mapa por defecto
         Promise.all([promesaRD, promesaHaiti]).then(([layerRD, layerHaiti]) => {
             if (layerRD) capaRD = layerRD;
             if (layerHaiti) capaHaiti = layerHaiti;
             
-            // Solo los marcadores están activos por defecto
             const overlayMaps = {
                 "📍 Accidentes Costeros (Marcadores)": markerGroup
             };
             
-            // Añadir las capas GeoJSON al control pero sin marcarlas como activas
             if (capaRD) overlayMaps["🌿 Manglares / Humedales RD"] = capaRD;
             if (capaHaiti) overlayMaps["🌾 Manglares / Humedales HAITI"] = capaHaiti;
             
-            // Crear control de capas - en móvil colapsado por defecto
+            // Control de capas colapsado por defecto
             const layerControl = L.control.layers(null, overlayMaps, { 
-                collapsed: true,  // Siempre colapsado en móvil y escritorio
+                collapsed: true,
                 position: 'topright',
                 sortLayers: true
             }).addTo(map);
@@ -482,19 +466,11 @@
             agregarLeyendaAlControl();
         });
         
-        setTimeout(() => {
-            if (window.geoJSONErrors && window.geoJSONErrors.length) {
-                console.warn("Errores GeoJSON:", window.geoJSONErrors);
-            } else {
-                console.log("✅ Archivos GeoJSON procesados correctamente");
-            }
-        }, 1000);
-        
         window.addEventListener('resize', () => {
             setTimeout(() => map.invalidateSize(), 200);
         });
         
-        console.log("🗺️ Mapa optimizado: control de capas oculto, solo marcadores activos, título reposicionado");
+        console.log("🗺️ Mapa optimizado: leyenda oculta hasta expandir control de capas");
     </script>
 </body>
 </html>
