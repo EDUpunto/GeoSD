@@ -21,7 +21,7 @@
             padding: 10px;
         }
 
-        /* Contenedor del mapa relativo para posicionar título flotante y botón EDUPUNTO */
+        /* Contenedor del mapa relativo para posicionar título flotante y botones */
         .map-container {
             position: relative;
             width: 100%;
@@ -50,7 +50,7 @@
             padding: 10px 24px;
             color: white;
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            pointer-events: none; /* permite interactuar con el mapa debajo */
+            pointer-events: none;
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             border-left: 4px solid #ffb347;
             border-right: 1px solid rgba(255,255,255,0.2);
@@ -70,67 +70,54 @@
             letter-spacing: 0.3px;
         }
         
-        /* Botón flotante EDUPUNTO - reemplaza la leyenda */
-        .edu-button {
+        /* Botones flotantes - Tamaño reducido y fondo con 70% de opacidad */
+        .edu-button, .edu2-button {
             position: absolute;
-            bottom: 30px;
-            left: 20px;
             z-index: 1000;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 70%);
+            background: rgba(30, 60, 114, 0.7);  /* 70% de opacidad */
             backdrop-filter: blur(4px);
-            border-radius: 50px;
-            padding: 12px 22px;
+            border-radius: 40px;
             color: white;
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            font-weight: 700;
-            font-size: 1rem;
-            letter-spacing: 1px;
+            font-weight: 600;
             text-decoration: none;
-            box-shadow: 0 6px 16px rgba(0,0,0,0.25);
-            border: 1px solid rgba(255,255,255,0.3);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.25);
             transition: all 0.2s ease;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
-            gap: 8px;S
+            gap: 5px;
             pointer-events: auto;
+            /* Tamaño reducido */
+            padding: 6px 12px;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
         }
-        .edu-button2 {
-            position: absolute;
-            bottom: 30px;
+        
+        /* Botón EDUPUNTO - izquierda */
+        .edu-button {
+            bottom: 20px;
             left: 20px;
-            z-index: 1000;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 70%);
-            backdrop-filter: blur(4px);
-            border-radius: 50px;
-            padding: 12px 22px;
-            color: white;
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            font-weight: 700;
-            font-size: 1rem;
-            letter-spacing: 1px;
-            text-decoration: none;
-            box-shadow: 0 6px 16px rgba(0,0,0,0.25);
-            border: 1px solid rgba(255,255,255,0.3);
-            transition: all 0.2s ease;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            pointer-events: auto;
+        }
+        
+        /* Botón IMPRIMIBLE - a la derecha del EDUPUNTO */
+        .edu2-button {
+            bottom: 20px;
+            left: 115px;  /* Separado del primer botón */
         }
 
-        .edu-button:hover {
-            background: linear-gradient(135deg, #0f2b4f 0%, #1e3c72 100%);
+        .edu-button:hover, .edu2-button:hover {
+            background: rgba(15, 43, 79, 0.85);
             transform: scale(1.02);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-            border-color: rgba(255,255,255,0.6);
+            box-shadow: 0 5px 12px rgba(0,0,0,0.25);
+            border-color: rgba(255,255,255,0.5);
         }
-        .edu-button:active {
+        .edu-button:active, .edu2-button:active {
             transform: scale(0.98);
         }
-        .edu-button span {
-            font-size: 1.2rem;
+        .edu-button span, .edu2-button span {
+            font-size: 0.9rem;
         }
         
         /* Ajuste para escritorio */
@@ -139,11 +126,35 @@
             #map { height: 650px; }
             .map-title h1 { font-size: 1.8rem; }
             .map-title p { font-size: 0.8rem; }
+            .edu-button, .edu2-button {
+                padding: 8px 16px;
+                font-size: 0.85rem;
+                gap: 6px;
+            }
+            .edu-button span, .edu2-button span {
+                font-size: 1rem;
+            }
             .edu-button {
-                padding: 14px 28px;
-                font-size: 1.1rem;
-                bottom: 35px;
+                bottom: 25px;
                 left: 25px;
+            }
+            .edu2-button {
+                bottom: 25px;
+                left: 130px;
+            }
+        }
+        
+        /* Ajuste para móviles muy pequeños */
+        @media (max-width: 380px) {
+            .edu-button, .edu2-button {
+                padding: 5px 10px;
+                font-size: 0.7rem;
+            }
+            .edu-button span, .edu2-button span {
+                font-size: 0.8rem;
+            }
+            .edu2-button {
+                left: 105px;
             }
         }
 
@@ -168,12 +179,11 @@
             font-family: 'Segoe UI', sans-serif;
         }
         .leaflet-control-layers-base {
-            display: none; /* Ocultamos capas base ya que solo usamos una base fija */
+            display: none;
         }
         .leaflet-control-layers-overlays {
             margin-bottom: 0;
         }
-        /* Pequeña leyenda integrada dentro del control de capas (texto decorativo) */
         .custom-layers-legend {
             border-top: 1px solid #ddd;
             margin-top: 8px;
@@ -188,7 +198,6 @@
             margin: 0 4px;
         }
         
-        /* Ajuste responsive para controles */
         @media (max-width: 480px) {
             .leaflet-control-layers {
                 max-height: 260px;
@@ -204,11 +213,12 @@
         <h1>🗺️ Isla de Santo Domingo</h1>
         <p>Atlas de costas | Rep.Dominicana y Haití</p>
     </div>
-    <!-- Botón enlace a https://edupunto.com/ en nueva pestaña -->
+    <!-- Botón EDUPUNTO -->
     <a href="https://edupunto.com/" target="_blank" rel="noopener noreferrer" class="edu-button">
         <span>🌐</span> EDUPUNTO
     </a>
-        <a href="https://docs.google.com/document/d/1WUY8rIBtC5IQcoIVGzZL9DL8FrdXgZPOiuH8uECPEFE/edit?usp=sharing/" target="_blank" rel="noopener noreferrer" class="edu2-button">
+    <!-- Botón IMPRIMIBLE -->
+    <a href="https://docs.google.com/document/d/1WUY8rIBtC5IQcoIVGzZL9DL8FrdXgZPOiuH8uECPEFE/edit?usp=sharing/" target="_blank" rel="noopener noreferrer" class="edu2-button">
         <span>🗒️</span> Imprimible
     </a>
 </div>
@@ -218,25 +228,20 @@
 
     <script>
         // ==================== CONFIGURACIÓN INICIAL ====================
-        // Centro exacto requerido: 18.877136320079128, -70.85179058820196
         const fixedCenter = [18.877136320079128, -70.85179058820196];
         const isMobile = window.innerWidth < 768;
         const initialZoom = isMobile ? 7 : 8.3;
         
-        // Inicializa el mapa centrado en coordenadas exactas
         var map = L.map('map').setView(fixedCenter, initialZoom);
 
-        // Capa de mapa base (Cyclosm - clara y detallada)
         L.tileLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', {
             maxZoom: 18,
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> | Cyclosm'
         }).addTo(map);
 
-        // Control de escala
         L.control.scale({ imperial: false, position: 'bottomright' }).addTo(map);
 
         // ==================== 1. MARCADORES DE ACCIDENTES COSTEROS ====================
-        // Lista completa sin ninguna mención a "Laguna Mala Punta" (verificado)
         const puntos = [
             { lat: 18.401415971261315, lng: -69.63189544985755, titulo: "Punta Caucedo" },
             { lat: 19.89410733279512, lng: -71.64999186722542, titulo: "Morro de Montecristi" },
@@ -300,10 +305,8 @@
             { lat: 19.681199070393557, lng: -71.84854563483924, titulo: "Bahía del Fuerte Libertad" }
         ];
         
-        // Filtro de seguridad adicional: eliminar cualquier punto cuyo título contenga "Laguna Mala Punta" (no existe en el listado, por robustez)
         const puntosFiltrados = puntos.filter(p => !p.titulo.toLowerCase().includes("laguna mala punta"));
         
-        // Grupo de capas para los marcadores
         let markerGroup = L.layerGroup().addTo(map);
 
         function agregarMarcador(punto) {
@@ -322,7 +325,7 @@
 
         puntosFiltrados.forEach(punto => agregarMarcador(punto));
 
-        // ==================== 2. CARGA DE GEOJSON (COSTAS / MANGIARES) ====================
+        // ==================== 2. CARGA DE GEOJSON ====================
         let capaRD, capaHaiti;
         
         const estiloRD = { color: "#e67e22", weight: 3, opacity: 0.85, fill: false };
@@ -367,13 +370,8 @@
         const promesaRD = cargarGeoJSON('costasRD.geojson', estiloRD, '🌿 Humedales / Manglares - República Dominicana');
         const promesaHaiti = cargarGeoJSON('costasHAITI.geojson', estiloHaiti, '🌾 Humedales / Manglares - Haití');
         
-        // ==================== 3. CONTROL DE CAPAS CON LEYENDA INCORPORADA ====================
-        // Para integrar la leyenda dentro del control de capas personalizamos el contenedor del control.
-        // Creamos una función que modifica el panel de capas añadiendo una pequeña sección gráfica (leyenda compacta)
+        // ==================== 3. CONTROL DE CAPAS ====================
         function agregarLeyendaAlControl(controlObj) {
-            // Esperamos a que el control se añada al mapa y luego modificamos su contenedor
-            // Como leaflet crea el panel dinámicamente, usamos un observer opcional pero más sencillo:
-            // Después de que el control se renderice, buscamos el elemento .leaflet-control-layers y añadimos el div de leyenda.
             setTimeout(() => {
                 const layersContainer = document.querySelector('.leaflet-control-layers');
                 if (layersContainer && !layersContainer.querySelector('.custom-layers-legend')) {
@@ -390,9 +388,7 @@
                     `;
                     layersContainer.appendChild(legendDiv);
                 } else if (layersContainer && layersContainer.querySelector('.custom-layers-legend')) {
-                    // ya existe, no duplicar
                 } else {
-                    // reintentar si aún no está presente (por carga asíncrona)
                     setTimeout(() => {
                         const retryContainer = document.querySelector('.leaflet-control-layers');
                         if (retryContainer && !retryContainer.querySelector('.custom-layers-legend')) {
@@ -414,7 +410,6 @@
             }, 150);
         }
         
-        // Construir control de capas después de cargar las capas
         Promise.all([promesaRD, promesaHaiti]).then(([layerRD, layerHaiti]) => {
             if (layerRD) capaRD = layerRD;
             if (layerHaiti) capaHaiti = layerHaiti;
@@ -431,9 +426,7 @@
                 sortLayers: true
             }).addTo(map);
             
-            // Agregar la mini leyenda dentro del control de capas (sin control externo)
             agregarLeyendaAlControl(layerControl);
-            
             console.log("✅ Control de capas con leyenda integrada correctamente.");
         }).catch(err => {
             console.warn("Carga parcial de GeoJSON, control con marcadores:", err);
@@ -444,10 +437,6 @@
             agregarLeyendaAlControl(fallbackControl);
         });
         
-        // También para el caso de que no se haya ejecutado el then al principio, aseguramos la leyenda al final
-        // Opción adicional: al mover el mouse o redimensionar no es necesario.
-        
-        // ==================== 4. NOTIFICACIONES DE ERROR Y AJUSTES ====================
         setTimeout(() => {
             if (window.geoJSONErrors && window.geoJSONErrors.length) {
                 console.warn("Errores GeoJSON:", window.geoJSONErrors);
@@ -472,12 +461,9 @@
         
         window.addEventListener('resize', () => {
             setTimeout(() => map.invalidateSize(), 200);
-            // Reajustar posible superposición de la leyenda interna no es necesario pero se mantiene.
         });
         
-        // Forzar un pequeño retoque para que el botón EDUPUNTO se vea correctamente encima de cualquier elemento leaflet
-        // Aseguramos que el título y el botón tengan z-index alto.
-        console.log("🗺️ Mapa centrado en 18.877136, -70.851790 | Leyenda integrada en control de capas | Botón EDUPUNTO añadido.");
+        console.log("🗺️ Mapa centrado en 18.877136, -70.851790 | Botones EDUPUNTO e IMPRIMIBLE redimensionados y con opacidad 70%");
     </script>
 </body>
 </html>
