@@ -19,7 +19,7 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f4f4f9;
             padding: 10px;
-            overflow: hidden; /* Evita scroll innecesario en el cuerpo */
+            overflow: hidden; 
         }
 
         .map-container {
@@ -40,8 +40,8 @@
         /* === TÍTULO === */
         .map-title {
             position: absolute;
-            z-index: 1000;
-            background: rgba(0, 0, 0, 0.7);
+            z-index: 1100; /* Mayor que Leaflet */
+            background: rgba(0, 0, 0, 0.75);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
             border-radius: 15px;
@@ -67,35 +67,37 @@
         /* === CONTENEDOR INFERIOR (Botones + Escala) === */
         .bottom-controls-container {
             position: absolute;
-            bottom: 20px;
+            bottom: 25px;
             left: 20px;
-            z-index: 1000;
+            z-index: 1200; /* Asegurar visibilidad */
             display: flex;
-            align-items: center; /* Alinea verticalmente botones y escala */
+            align-items: center; 
             gap: 15px;
-            flex-wrap: wrap;
+            pointer-events: none; /* Permite clicks a través del contenedor, pero no de sus hijos */
         }
         
         .buttons-group {
             display: flex;
             gap: 10px;
+            pointer-events: auto; /* Reactiva clicks para los botones */
         }
 
         .edu-button, .edu2-button {
-            background: rgba(30, 60, 114, 0.85);
+            background: rgba(30, 60, 114, 0.9);
             backdrop-filter: blur(4px);
             border-radius: 30px;
             color: white;
             text-decoration: none;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
             border: 1px solid rgba(255,255,255,0.2);
-            padding: 8px 15px;
+            padding: 8px 16px;
             font-size: 0.8rem;
             font-weight: 600;
             display: flex;
             align-items: center;
             gap: 6px;
             transition: 0.2s;
+            white-space: nowrap;
         }
 
         .edu-button:hover, .edu2-button:hover {
@@ -107,6 +109,10 @@
         .leaflet-control-scale {
             margin-bottom: 0 !important;
             margin-left: 0 !important;
+            pointer-events: auto;
+            background: rgba(255, 255, 255, 0.5) !important;
+            padding: 2px 5px;
+            border-radius: 4px;
         }
 
         /* ========== AJUSTES DESKTOP ========== */
@@ -120,37 +126,42 @@
 
         /* ========== AJUSTES MÓVIL ========== */
         @media (max-width: 768px) {
-            body { padding: 5px; }
-            .map-container { height: 98vh; }
-
-            .map-title {
-                top: 10px;
-                left: 10px;
-                right: 60px; /* Evita que choque con el control de capas */
-                max-width: calc(100% - 70px);
-                padding: 8px 12px;
-                border-radius: 10px;
+            body { padding: 0; }
+            .map-container { 
+                height: 100vh; 
+                border-radius: 0;
             }
 
-            .map-title h1 { font-size: 0.95rem; }
-            .map-title p { font-size: 0.6rem; }
+            .map-title {
+                top: 15px;
+                left: 10px;
+                right: 70px; /* Evita que choque con el control de capas */
+                max-width: calc(100% - 85px);
+                padding: 10px 15px;
+                border-radius: 12px;
+            }
+
+            .map-title h1 { font-size: 1rem; }
+            .map-title p { font-size: 0.65rem; }
 
             .bottom-controls-container {
-                bottom: 15px;
+                bottom: 40px; /* Elevado para evitar barras del navegador */
                 left: 10px;
-                gap: 10px;
+                gap: 8px;
                 width: calc(100% - 20px);
+                flex-wrap: wrap; /* Permite que la escala baje si no hay espacio */
             }
 
             .edu-button, .edu2-button {
-                padding: 6px 10px;
-                font-size: 0.7rem;
+                padding: 7px 12px;
+                font-size: 0.75rem;
             }
 
-            /* Estilo compacto para escala en móvil */
             .leaflet-control-scale-line {
-                font-size: 9px !important;
-                background: rgba(255, 255, 255, 0.7) !important;
+                font-size: 10px !important;
+                background: rgba(255, 255, 255, 0.8) !important;
+                height: 12px !important;
+                line-height: 10px !important;
             }
         }
 
@@ -186,42 +197,39 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
-    // Configuración
     const isMobile = window.innerWidth < 768;
     const center = [18.8, -71.2];
     
-    // Inicialización del Mapa
-    // Moví zoomControl a false para agregarlo manualmente en una posición que no estorbe
     var map = L.map('map', {
         zoomControl: false, 
         zoomSnap: 0.5
     }).setView(center, isMobile ? 7 : 8);
 
-    // Capa base
     L.tileLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', {
         maxZoom: 18,
         attribution: 'CyclOSM'
     }).addTo(map);
 
-    // Agregar Zoom en la derecha para evitar el título
+    // Zoom en la derecha
     L.control.zoom({ position: 'topright' }).addTo(map);
 
-    // Agregar Escala
+    // Escala
     const scaleControl = L.control.scale({ 
         imperial: false, 
         position: 'bottomleft' 
     }).addTo(map);
 
-    // MOVER LA ESCALA AL LADO DE LOS BOTONES (Lógica crucial)
+    // MOVER LA ESCALA AL LADO DE LOS BOTONES
     function moveScale() {
         const scaleElement = document.querySelector('.leaflet-control-scale');
         const targetContainer = document.getElementById('custom-bottom-controls');
         if (scaleElement && targetContainer) {
             targetContainer.appendChild(scaleElement);
+            scaleElement.style.display = "block"; // Asegurar visibilidad
         }
     }
 
-    // Puntos (Resumen de los principales para el ejemplo)
+    // Puntos de interés
     const puntos = [
             { lat: 18.401415971261315, lng: -69.63189544985755, titulo: "Punta Caucedo" },
             { lat: 19.89410733279512, lng: -71.64999186722542, titulo: "Morro de Montecristi" },
@@ -282,6 +290,7 @@
             { lat: 18.83630504530466, lng: -73.0118022199312, titulo: "Isla de Gonaive" },
             { lat: 19.163115128402698, lng: -73.05940870692616, titulo: "Golfo de Gonaive" },
             { lat: 20.04580561027507, lng: -72.76411223048235, titulo: "Isla de La Tortuga" },
+            { lat: 18.40384906773233, lng: -75.01368694612037, titulo: "Isla de Navassa" },
             { lat: 19.681199070393557, lng: -71.84854563483924, titulo: "Bahía del Fuerte Libertad" }
     ];
 
@@ -291,14 +300,14 @@
         m.bindPopup(`<strong>📍 ${p.titulo}</strong>`, { className: 'custom-popup' });
     });
 
-    // Control de Capas
     const overlayMaps = { "📍 Accidentes Costeros": markerGroup };
     L.control.layers(null, overlayMaps, { collapsed: true, position: 'topright' }).addTo(map);
 
-    // Ejecutar movimiento de escala tras carga
-    window.onload = moveScale;
+    // Ejecución robusta de movimiento de escala
+    window.addEventListener('load', () => {
+        setTimeout(moveScale, 500); // Pequeño retardo para asegurar renderizado de Leaflet
+    });
     
-    // Corregir si el mapa cambia de tamaño
     window.addEventListener('resize', () => {
         map.invalidateSize();
         moveScale();
