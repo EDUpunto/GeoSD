@@ -282,6 +282,142 @@
             { lat: 19.681199070393557, lng: -71.84854563483924, titulo: "Bahía del Fuerte Libertad" }
     ];
 
+
+
+
+
+// Lista de ríos con coordenadas y comentario personalizado **********************************************
+// Lista de ríos con coordenadas y comentario personalizado
+var rios = [
+    {
+        nombre: "Río Haina",
+        coordenadas: [18.418738687509286, -70.01889335090772],
+        comentario: "Zona influenciada por actividad industrial y portuaria."
+    },
+   {
+        nombre: "Río Ozama",
+        coordenadas: [18.47100959803709, -69.87952116396366],
+        comentario: "Principal río del Gran Santo Domingo, con alta presión urbana."
+    },
+    {
+        nombre: "Río Higuamo",
+        coordenadas: [18.441846417578624, -69.31513488241391],
+        comentario: "Importante ecosistema estuarino asociado a manglares."
+    },
+    {
+        nombre: "Río Yuma",
+        coordenadas: [18.380289609312758, -68.60400614146857],
+        comentario: "Importante ecosistema estuarino asociado a manglares."
+    },
+    {
+        nombre: "Río Soco",
+        coordenadas: [18.45284572589469, -69.20459530053246],
+        comentario: "Área vinculada a actividades agrícolas y turísticas."
+    },
+    {
+        nombre: "Río Cumayasa",
+        coordenadas: [18.395102801632156, -69.08395288246885],
+        comentario: "Desembocadura con relevancia ecológica y turística."
+    },
+    {
+        nombre: "Río Romana",
+        coordenadas: [18.41560433561995, -68.95970149415454],
+        comentario: "Zona costera cercana a actividades urbanas e industriales."
+    },
+   {
+        nombre: "Río Chavón",
+        coordenadas: [18.41560433561995, -68.95970149415454],
+        comentario: "Pendiente."
+    },
+    {
+        nombre: "Río Yubazo",
+        coordenadas: [18.371511601407573, -70.0509985058354],
+        comentario: "Pendiente."
+    },
+    {
+        nombre: "Río Nizao",
+        coordenadas: [18.23396719498754, -70.18001230198149],
+        comentario: "Pendiente."
+    },
+    {
+        nombre: "Río Baní",
+        coordenadas: [18.23071602357976, -70.3027528988861],
+        comentario: "Pendiente."
+    },
+    {
+        nombre: "Río Ocoa",
+        coordenadas: [18.27826401773125, -70.57991107214782],
+        comentario: "Pendiente."
+    },
+    {
+        nombre: "Río Tábara",
+        coordenadas: [18.354562720666255, -70.80392322281966],
+        comentario: "Pendiente."
+    },
+    {
+        nombre: "Río Yaque del Sur",
+        coordenadas: [18.262474362655073, -71.1109932741054],
+        comentario: "Pendiente."
+    },
+    {
+        nombre: "Río Nizaito",
+        coordenadas: [17.99148451984096, -71.16008625766224],
+        comentario: "Pendiente."
+    },
+    {
+        nombre: "Laguna de Oviedo",
+        coordenadas: [17.75911317457582, -71.37095253492022],
+        comentario: "Pendiente."
+    },
+    {
+        nombre: "Río Pedernales",
+        coordenadas: [18.038173652593677, -71.7567698006091],
+        comentario: "Pendiente."
+    } 
+];
+
+// Función para ajustar tamaño según zoom
+function obtenerRadio() {
+    let zoom = map.getZoom();
+
+    if (zoom <= 8) return 5;
+    if (zoom <= 10) return 8;
+    if (zoom <= 12) return 12;
+    if (zoom <= 14) return 18;
+    return 25;
+}
+
+// Crear marcadores circulares
+var circulos = [];
+
+rios.forEach(function(rio) {
+    let circulo = L.circleMarker(rio.coordenadas, {
+        radius: obtenerRadio(),
+        color: 'red',
+        fillColor: '#f03',
+        fillOpacity: 0.5,
+        weight: 2
+    })
+    .addTo(map)
+    .bindPopup(`
+        <h3>${rio.nombre}</h3>
+        <p>${rio.comentario}</p>
+    `);
+
+    circulos.push(circulo);
+});
+
+// Actualizar tamaño al cambiar el zoom
+map.on('zoomend', function() {
+    let nuevoRadio = obtenerRadio();
+
+    circulos.forEach(function(circulo) {
+        circulo.setRadius(nuevoRadio);
+    });
+});
+//************************************************************************************
+
+
     // Al haber una sola capa, los marcadores se añaden directamente al mapa
     puntos.forEach(p => {
         const m = L.marker([p.lat, p.lng]).addTo(map);
