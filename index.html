@@ -36,38 +36,39 @@
             background-color: #a3ccff;
         }
 
-        /* === TÍTULO === */
+        /* === VENTANA DE TÍTULO PREMIUM === */
         .map-title {
             position: absolute;
             z-index: 1100;
             top: 20px;
             left: 20px;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             border-radius: 12px;
-            padding: 12px 20px;
+            padding: 14px 22px;
             color: white;
             pointer-events: none;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
             border-left: 5px solid #ffb347;
-            max-width: 350px;
+            max-width: 380px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .map-title h1 {
             margin: 0;
-            font-size: 1.2rem;
+            font-size: 1.25rem;
             font-weight: 700;
             letter-spacing: 0.5px;
         }
 
         .map-title p {
-            margin: 3px 0 0;
+            margin: 4px 0 0;
             font-size: 0.8rem;
             opacity: 0.85;
         }
         
-        /* === CONTENEDOR INFERIOR (Botones + Escala) === */
+        /* === CONTENEDOR INFERIOR DE BOTONES (Izquierda) === */
         .bottom-controls-container {
             position: absolute;
             bottom: 30px;
@@ -87,7 +88,7 @@
 
         .edu-button, .edu2-button {
             background: rgba(30, 60, 114, 0.95);
-            backdrop-filter: blur(4px);
+            backdrop-filter: blur(6px);
             border-radius: 50px;
             color: white;
             text-decoration: none;
@@ -99,71 +100,253 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             white-space: nowrap;
         }
 
         .edu-button:hover, .edu2-button:hover {
             background: rgba(41, 82, 153, 1);
-            transform: translateY(-3px);
+            transform: translateY(-2px);
             box-shadow: 0 6px 15px rgba(0,0,0,0.5);
         }
 
-        /* Escala inyectada */
+        /* Escala inyectada estilo oscuro premium */
         .leaflet-control-scale {
             margin: 0 !important;
             pointer-events: auto;
-            background: rgba(255, 255, 255, 0.85) !important;
+            background: rgba(0, 0, 0, 0.8) !important;
             padding: 4px 8px;
             border-radius: 6px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-            border: 1px solid #ccc !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
         }
 
-        /* Ajustes de Popups */
+        .leaflet-control-scale-line {
+            background: transparent !important;
+            color: white !important;
+            border: 2px solid white !important;
+            border-top: none !important;
+            font-size: 10px !important;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        /* === ESTILOS POPUP MEJORADOS === */
+        .leaflet-popup-content-wrapper {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+
         .leaflet-popup-content {
-            margin: 15px !important;
-            line-height: 1.4;
+            margin: 14px 18px !important;
+            line-height: 1.45;
         }
 
-        .popup-comment {
-            display: block;
-            margin-top: 5px;
+        /* === LEYENDA Y CONTROL DE CAPAS DESPLEGABLE === */
+        .custom-legend-panel {
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: white;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.45);
             font-size: 0.85rem;
-            color: #555;
-            font-style: italic;
+            max-width: 290px;
+            margin-top: 10px;
+            margin-right: 10px;
+            transition: all 0.3s ease;
         }
 
-        /* ========== AJUSTES MÓVIL ========== */
+        .custom-legend-panel details summary {
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            outline: none;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            user-select: none;
+            color: #ffb347;
+        }
+
+        .custom-legend-panel details summary::after {
+            content: '▼';
+            font-size: 0.7rem;
+            transition: transform 0.25s ease;
+            color: white;
+        }
+
+        .custom-legend-panel details[open] summary::after {
+            transform: rotate(180deg);
+        }
+
+        .custom-legend-panel details summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .legend-list {
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            padding-top: 10px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            user-select: none;
+            padding: 2px 0;
+            transition: transform 0.1s ease;
+        }
+
+        .legend-item:active {
+            transform: scale(0.98);
+        }
+
+        .legend-item input[type="checkbox"] {
+            cursor: pointer;
+            width: 15px;
+            height: 15px;
+            accent-color: #ffb347;
+            margin: 0;
+        }
+
+        .legend-label-text {
+            flex-grow: 1;
+            font-weight: 500;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* Símbolos e Indicadores de Color */
+        .symbol-marker-blue {
+            width: 12px;
+            height: 12px;
+            background-color: #2A82CA;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 0 4px rgba(0,0,0,0.5);
+            flex-shrink: 0;
+        }
+
+        .symbol-marker-purple {
+            width: 12px;
+            height: 12px;
+            background-color: #6633CC;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 0 4px rgba(0,0,0,0.5);
+            flex-shrink: 0;
+        }
+
+        .symbol-circle-red {
+            width: 12px;
+            height: 12px;
+            background-color: #FF0000;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            flex-shrink: 0;
+        }
+
+        .symbol-circle-orange {
+            width: 12px;
+            height: 12px;
+            background-color: #FF6600;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            flex-shrink: 0;
+        }
+
+        /* === DISEÑO DE CONTROLES DE ZOOM ESTILO PREMIUM === */
+        .leaflet-control-zoom {
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.45) !important;
+            border-radius: 10px !important;
+            overflow: hidden;
+            margin-bottom: 25px !important;
+            margin-right: 20px !important;
+        }
+
+        .leaflet-control-zoom-in, .leaflet-control-zoom-out {
+            background: rgba(0, 0, 0, 0.85) !important;
+            color: white !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
+            transition: background 0.2s ease, color 0.2s ease;
+            width: 34px !important;
+            height: 34px !important;
+            line-height: 34px !important;
+            font-size: 16px !important;
+        }
+
+        .leaflet-control-zoom-in:hover, .leaflet-control-zoom-out:hover {
+            background: rgba(40, 40, 40, 0.95) !important;
+            color: #ffb347 !important;
+        }
+
+        /* Evitar marcos y sombras por defecto de Leaflet */
+        .leaflet-bar {
+            border: none !important;
+            box-shadow: none !important;
+        }
+
+        /* ========== MÓVIL / CELULARES (RESPONSIVE) ========== */
         @media (max-width: 768px) {
             .map-title {
-                top: 15px;
-                left: 15px;
-                right: 20px; /* Al no haber control de capas, puede ocupar más ancho */
+                top: 10px;
+                left: 10px;
+                right: 10px;
                 max-width: none;
-                padding: 10px 15px;
+                padding: 10px 14px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.4);
             }
 
-            .map-title h1 { font-size: 1rem; }
-            .map-title p { font-size: 0.7rem; }
+            .map-title h1 { font-size: 1.05rem; }
+            .map-title p { font-size: 0.72rem; }
 
+            /* Mueve la leyenda/capas para que quede siempre debajo de la ventana de título */
+            .leaflet-top.leaflet-right {
+                top: 90px !important; 
+                right: 10px !important;
+            }
+
+            /* Ubicación y márgenes del Zoom en celular */
+            .leaflet-bottom.leaflet-right {
+                bottom: 15px !important;
+                right: 10px !important;
+            }
+
+            .leaflet-control-zoom {
+                margin-bottom: 0px !important;
+                margin-right: 0px !important;
+            }
+
+            /* Barra de botones inferior izquierda adaptativa sin solaparse con Zoom */
             .bottom-controls-container {
-                bottom: 45px;
-                left: 15px;
-                gap: 10px;
-                flex-wrap: wrap;
-                width: calc(100% - 30px);
+                bottom: 15px;
+                left: 10px;
+                gap: 8px;
+                flex-direction: column;
+                align-items: flex-start;
+                max-width: calc(100% - 70px); /* Deja espacio protegido a la derecha para el zoom */
+            }
+
+            .buttons-group {
+                gap: 6px;
             }
 
             .edu-button, .edu2-button {
                 padding: 8px 12px;
                 font-size: 0.75rem;
-            }
-
-            .leaflet-control-scale-line {
-                font-size: 10px !important;
-                height: 14px !important;
-                line-height: 12px !important;
             }
         }
     </style>
@@ -173,11 +356,13 @@
 <div class="map-container">
     <div id="map"></div>
     
+    <!-- Ventana de título sobrepuesta -->
     <div class="map-title">
-        <h1>🗺️ Isla de Santo Domingo</h1>
-        <p>Costas de la Rep. Dominicana y Haití</p>
+        <h1>🗺️ Costas de Santo Domingo</h1>
+        <p>Accidentes geográficos y desembocaduras</p>
     </div>
 
+    <!-- Controles de fondo integrados -->
     <div class="bottom-controls-container" id="custom-bottom-controls">
         <div class="buttons-group">
             <a href="https://edupunto.com/" target="_blank" class="edu-button"><span>🌐</span> EDUPUNTO</a>
@@ -186,29 +371,35 @@
     </div>
 </div>
 
+<!-- Leaflet JS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
     const isMobile = window.innerWidth < 768;
     const center = [18.8, -71.2];
     
-    var map = L.map('map', {
+    // Desactivamos el zoom automático para colocarlo de manera controlada abajo a la derecha
+    const map = L.map('map', {
         zoomControl: false, 
         zoomSnap: 0.5
-    }).setView(center, isMobile ? 7 : 8.5);
+    }).setView(center, isMobile ? 6.8 : 8.5);
 
+    // Servidor de mapas elegante
     L.tileLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', {
         maxZoom: 18,
         attribution: 'CyclOSM'
     }).addTo(map);
 
-    L.control.zoom({ position: 'topright' }).addTo(map);
+    // Agrega el control de zoom en la parte inferior derecha para evitar colisiones móviles
+    L.control.zoom({ position: 'bottomright' }).addTo(map);
 
+    // Escala del mapa
     const scaleControl = L.control.scale({ 
         imperial: false, 
         position: 'bottomleft' 
     }).addTo(map);
 
+    // Integración de la escala junto con los botones personalizados para orden absoluto
     function moveScale() {
         const scaleElement = document.querySelector('.leaflet-control-scale');
         const targetContainer = document.getElementById('custom-bottom-controls');
@@ -217,367 +408,292 @@
         }
     }
 
-    // Puntos con comentario independiente
+    // --- BASE DE DATOS GEOGRÁFICA ---
     const puntos = [
-            { lat: 18.401415971261315, lng: -69.63189544985755, titulo: "Punta Caucedo", comentario: "Pendiente." },
-            { lat: 19.89410733279512, lng: -71.64999186722542, titulo: "Morro de Montecristi", comentario: "Pendiente." },
-            { lat: 19.745761510527092, lng: -71.75456754175141, titulo: "Bahía de Manzanillo", comentario: "Pendiente." },
-            { lat: 19.873004952110815, lng: -71.83363977365414, titulo: "Cayos Los Siete Hermanos", comentario: "Pendiente." },
-            { lat: 19.87012919244153, lng: -71.30557395163945, titulo: "Cayo Arena", comentario: "Pendiente." },
-            { lat: 19.869935349250476, lng: -71.21171195703263, titulo: "Punta Burén", comentario: "Pendiente." },
-            { lat: 19.849205348531424, lng: -71.17269594730766, titulo: "Estero Hondo", comentario: "Pendiente." },
-            { lat: 19.931324644015668, lng: -70.99806277941562, titulo: "Cabo Isabela", comentario: "Pendiente." },
-            { lat: 19.900659645556697, lng: -70.94753922732326, titulo: "Bahía de Luperón", comentario: "Pendiente." },
-            { lat: 19.83393880041659, lng: -70.77910151998599, titulo: "Bahía de Maimón", comentario: "Pendiente." },
-            { lat: 19.821721953437343, lng: -70.72732798590087, titulo: "Bahía de Cofresí", comentario: "Pendiente." },
-            { lat: 19.80275635707941, lng: -70.70221393389002, titulo: "Bahía de Puerto Plata", comentario: "Pendiente." },
-            { lat: 19.7522428101026, lng: -70.40173463631227, titulo: "Punta Cabarete", comentario: "Pendiente." },
-            { lat: 19.66668837196901, lng: -69.93681029312651, titulo: "Cabo Francés Viejo", comentario: "Pendiente." },
-            { lat: 19.38500258110248, lng: -69.76198244607639, titulo: "Bahía Escosesa", comentario: "Pendiente." },
-            { lat: 19.26318454383689, lng: -69.50717975124323, titulo: "Península de Samaná", comentario: "Pendiente." },
-            { lat: 19.355239356355614, lng: -69.2279235683259, titulo: "Cabo Cabrón", comentario: "Pendiente." },
-            { lat: 19.306253430663016, lng: -69.22494107965022, titulo: "Bahía Rincón", comentario: "Pendiente." },
-            { lat: 19.29889265602067, lng: -69.15759239449994, titulo: "Cabo Samaná", comentario: "Pendiente." },
-            { lat: 19.166648707768736, lng: -69.2755119339007, titulo: "Cayo Levantado", comentario: "Pendiente." },
-            { lat: 19.156847881454176, lng: -69.54679192132382, titulo: "Bahía de Samaná", comentario: "Pendiente." },
-            { lat: 19.085368769407342, lng: -69.45219792686838, titulo: "Bahía de San Lorenzo", comentario: "Pendiente." },
-            { lat: 19.023514779239836, lng: -69.1455251448014, titulo: "Bahía de La Gina", comentario: "Pendiente." },
-            { lat: 19.01368023582993, lng: -68.93922228473721, titulo: "Laguna Redonda", comentario: "Pendiente." },
-            { lat: 18.9792850619904, lng: -68.84980200842959, titulo: "Laguna del Limón", comentario: "Pendiente." },
-            { lat: 18.97395623165452, lng: -68.77597515880271, titulo: "Punta Nisibón", comentario: "Pendiente." },
-            { lat: 18.779398628458928, lng: -68.52739802435059, titulo: "Punta Macao", comentario: "Pendiente." },
-            { lat: 18.651503279070845, lng: -68.37788523013502, titulo: "Laguna de Bávaro", comentario: "Pendiente." },
-            { lat: 18.616638722806258, lng: -68.32548165449994, titulo: "Cabo Engaño", comentario: "Pendiente." },
-            { lat: 18.348163794270047, lng: -68.4685534525929, titulo: "Cabo San Rafael", comentario: "Pendiente." },
-            { lat: 18.362153526738698, lng: -68.59699247250697, titulo: "Bahía de Yuma", comentario: "Pendiente." },
-            { lat: 18.21319388996826, lng: -68.64606962526226, titulo: "Punta El Algibe", comentario: "Pendiente." },
-            { lat: 18.19524900032121, lng: -68.6378344380777, titulo: "Isla Catalinita", comentario: "Pendiente." },
-            { lat: 18.15047240579683, lng: -68.70425645730123, titulo: "Isla Saona", comentario: "Pendiente." },
-            { lat: 18.208995883298837, lng: -68.74976896713544, titulo: "Punta Catuano", comentario: "Pendiente." },
-            { lat: 18.406436824199496, lng: -68.94775432831271, titulo: "Punta Águila", comentario: "Pendiente." },
-            { lat: 18.359648082761627, lng: -69.00855679720497, titulo: "Isla Catalina", comentario: "Pendiente." },
-            { lat: 18.43126462935202, lng: -69.60799795394897, titulo: "Bahía de Andrés", comentario: "Pendiente." },
-            { lat: 18.2238636606466, lng: -70.23729951762026, titulo: "Punta Catalina", comentario: "Pendiente." },
-            { lat: 18.227688115771187, lng: -70.5466620568352, titulo: "Punta Salinas", comentario: "Pendiente." },
-            { lat: 18.22349023877843, lng: -70.53289854153572, titulo: "Bahía de Las Calderas", comentario: "Pendiente." },
-            { lat: 18.377871154697694, lng: -70.64099620816235, titulo: "Bahía de Ocoa", comentario: "Pendiente." },
-            { lat: 18.34962869037077, lng: -70.80272569529228, titulo: "Bahía de Jura", comentario: "Pendiente." },
-            { lat: 18.337241556112684, lng: -70.82070601300842, titulo: "Cayo Boca Chica", comentario: "Pendiente." },
-            { lat: 18.3421826444704, lng: -70.83599747226957, titulo: "Bahía Puerto Viejo", comentario: "Pendiente." },
-            { lat: 18.271278364953535, lng: -71.06011134547535, titulo: "Bahía de Neiba", comentario: "Pendiente." },
-            { lat: 17.773215659073358, lng: -71.36570983268444, titulo: "Laguna de Oviedo", comentario: "Pendiente." },
-            { lat: 17.60934727008468, lng: -71.42395075157987, titulo: "Punta Beata", comentario: "Pendiente." },
-            { lat: 17.58054411334642, lng: -71.51519990025173, titulo: "Isla Beata", comentario: "Pendiente." },
-            { lat: 17.47673010733354, lng: -71.64310048712883, titulo: "Isla Alto Velo", comentario: "Pendiente." },
-            { lat: 17.770161361705018, lng: -71.68837748932467, titulo: "Punta Ceminche", comentario: "Pendiente." },
-            { lat: 17.90507251288631, lng: -71.67203813986372, titulo: "Cabo Rojo", comentario: "Pendiente." },
-            { lat: 17.840256274199824, lng: -71.63372213599197, titulo: "Bahía de Las Águilas", comentario: "Pendiente." },
-            { lat: 18.178501710547327, lng: -72.54537471811965, titulo: "Cabo Jacmel", comentario: "Pendiente." },
-            { lat: 18.39189119735582, lng: -73.3416776906585, titulo: "Península de Tiburón", comentario: "Pendiente." },
-            { lat: 18.078632835421335, lng: -73.62325703844466, titulo: "Isla de La Vaca", comentario: "Pendiente." },
-            { lat: 18.618622987637483, lng: -73.73570091926777, titulo: "Isla de Cayemite", comentario: "Pendiente." },
-            { lat: 18.83630504530466, lng: -73.0118022199312, titulo: "Isla de Gonaive", comentario: "Pendiente." },
-            { lat: 19.163115128402698, lng: -73.05940870692616, titulo: "Golfo de Gonaive", comentario: "Pendiente." },
-            { lat: 20.04580561027507, lng: -72.76411223048235, titulo: "Isla de La Tortuga", comentario: "Pendiente." },
-            { lat: 18.40384906773233, lng: -75.01368694612037, titulo: "Isla de Navassa", comentario: "Pendiente." },
-            { lat: 19.681199070393557, lng: -71.84854563483924, titulo: "Bahía del Fuerte Libertad", comentario: "Pendiente." },
-            { lat: 19.80713370508267, lng: -73.17169502428142, titulo: "Peninsula del Noroeste", comentario: "Pendiente." }
+        { lat: 18.401415971261315, lng: -69.63189544985755, titulo: "Punta Caucedo", comentario: "Pendiente." },
+        { lat: 19.89410733279512, lng: -71.64999186722542, titulo: "Morro de Montecristi", comentario: "Pendiente." },
+        { lat: 19.745761510527092, lng: -71.75456754175141, titulo: "Bahía de Manzanillo", comentario: "Pendiente." },
+        { lat: 19.873004952110815, lng: -71.83363977365414, titulo: "Cayos Los Siete Hermanos", comentario: "Pendiente." },
+        { lat: 19.87012919244153, lng: -71.30557395163945, titulo: "Cayo Arena", comentario: "Pendiente." },
+        { lat: 19.869935349250476, lng: -71.21171195703263, titulo: "Punta Burén", comentario: "Pendiente." },
+        { lat: 19.849205348531424, lng: -71.17269594730766, titulo: "Estero Hondo", comentario: "Pendiente." },
+        { lat: 19.931324644015668, lng: -70.99806277941562, titulo: "Cabo Isabela", comentario: "Pendiente." },
+        { lat: 19.900659645556697, lng: -70.94753922732326, titulo: "Bahía de Luperón", comentario: "Pendiente." },
+        { lat: 19.83393880041659, lng: -70.77910151998599, titulo: "Bahía de Maimón", comentario: "Pendiente." },
+        { lat: 19.821721953437343, lng: -70.72732798590087, titulo: "Bahía de Cofresí", comentario: "Pendiente." },
+        { lat: 19.80275635707941, lng: -70.70221393389002, titulo: "Bahía de Puerto Plata", comentario: "Pendiente." },
+        { lat: 19.7522428101026, lng: -70.40173463631227, titulo: "Punta Cabarete", comentario: "Pendiente." },
+        { lat: 19.66668837196901, lng: -69.93681029312651, titulo: "Cabo Francés Viejo", comentario: "Pendiente." },
+        { lat: 19.38500258110248, lng: -69.76198244607639, titulo: "Bahía Escosesa", comentario: "Pendiente." },
+        { lat: 19.26318454383689, lng: -69.50717975124323, titulo: "Península de Samaná", comentario: "Pendiente." },
+        { lat: 19.355239356355614, lng: -69.2279235683259, titulo: "Cabo Cabrón", comentario: "Pendiente." },
+        { lat: 19.306253430663016, lng: -69.22494107965022, titulo: "Bahía Rincón", comentario: "Pendiente." },
+        { lat: 19.29889265602067, lng: -69.15759239449994, titulo: "Cabo Samaná", comentario: "Pendiente." },
+        { lat: 19.166648707768736, lng: -69.2755119339007, titulo: "Cayo Levantado", comentario: "Pendiente." },
+        { lat: 19.156847881454176, lng: -69.54679192132382, titulo: "Bahía de Samaná", comentario: "Pendiente." },
+        { lat: 19.085368769407342, lng: -69.45219792686838, titulo: "Bahía de San Lorenzo", comentario: "Pendiente." },
+        { lat: 19.023514779239836, lng: -69.1455251448014, titulo: "Bahía de La Gina", comentario: "Pendiente." },
+        { lat: 19.01368023582993, lng: -68.93922228473721, titulo: "Laguna Redonda", comentario: "Pendiente." },
+        { lat: 18.9792850619904, lng: -68.84980200842959, titulo: "Laguna del Limón", comentario: "Pendiente." },
+        { lat: 18.97395623165452, lng: -68.77597515880271, titulo: "Punta Nisibón", comentario: "Pendiente." },
+        { lat: 18.779398628458928, lng: -68.52739802435059, titulo: "Punta Macao", comentario: "Pendiente." },
+        { lat: 18.651503279070845, lng: -68.37788523013502, titulo: "Laguna de Bávaro", comentario: "Pendiente." },
+        { lat: 18.616638722806258, lng: -68.32548165449994, titulo: "Cabo Engaño", comentario: "Pendiente." },
+        { lat: 18.348163794270047, lng: -68.4685534525929, titulo: "Cabo San Rafael", comentario: "Pendiente." },
+        { lat: 18.362153526738698, lng: -68.59699247250697, titulo: "Bahía de Yuma", comentario: "Pendiente." },
+        { lat: 18.21319388996826, lng: -68.64606962526226, titulo: "Punta El Algibe", comentario: "Pendiente." },
+        { lat: 18.19524900032121, lng: -68.6378344380777, titulo: "Isla Catalinita", comentario: "Pendiente." },
+        { lat: 18.15047240579683, lng: -68.70425645730123, titulo: "Isla Saona", comentario: "Pendiente." },
+        { lat: 18.208995883298837, lng: -68.74976896713544, titulo: "Punta Catuano", comentario: "Pendiente." },
+        { lat: 18.406436824199496, lng: -68.94775432831271, titulo: "Punta Águila", comentario: "Pendiente." },
+        { lat: 18.359648082761627, lng: -69.00855679720497, titulo: "Isla Catalina", comentario: "Pendiente." },
+        { lat: 18.43126462935202, lng: -69.60799795394897, titulo: "Bahía de Andrés", comentario: "Pendiente." },
+        { lat: 18.2238636606466, lng: -70.23729951762026, titulo: "Punta Catalina", comentario: "Pendiente." },
+        { lat: 18.227688115771187, lng: -70.5466620568352, titulo: "Punta Salinas", comentario: "Pendiente." },
+        { lat: 18.22349023877843, lng: -70.53289854153572, titulo: "Bahía de Las Calderas", comentario: "Pendiente." },
+        { lat: 18.377871154697694, lng: -70.64099620816235, titulo: "Bahía de Ocoa", comentario: "Pendiente." },
+        { lat: 18.34962869037077, lng: -70.80272569529228, titulo: "Bahía de Jura", comentario: "Pendiente." },
+        { lat: 18.337241556112684, lng: -70.82070601300842, titulo: "Cayo Boca Chica", comentario: "Pendiente." },
+        { lat: 18.3421826444704, lng: -70.83599747226957, titulo: "Bahía Puerto Viejo", comentario: "Pendiente." },
+        { lat: 18.271278364953535, lng: -71.06011134547535, titulo: "Bahía de Neiba", comentario: "Pendiente." },
+        { lat: 17.773215659073358, lng: -71.36570983268444, titulo: "Laguna de Oviedo", comentario: "Pendiente." },
+        { lat: 17.60934727008468, lng: -71.42395075157987, titulo: "Cabo Beata", comentario: "Pendiente." },
+        { lat: 17.58054411334642, lng: -71.51519990025173, titulo: "Isla Beata", comentario: "Pendiente." },
+        { lat: 17.47673010733354, lng: -71.64310048712883, titulo: "Isla Alto Velo", comentario: "Pendiente." },
+        { lat: 17.770161361705018, lng: -71.68837748932467, titulo: "Cabo Falso", comentario: "Pendiente." },
+        { lat: 17.810781382495712, lng: -71.65318854393053, titulo: "Punta Ceminche", comentario: "Pendiente." },
+        { lat: 17.90507251288631, lng: -71.67203813986372, titulo: "Cabo Rojo", comentario: "Pendiente." },
+        { lat: 17.840256274199824, lng: -71.63372213599197, titulo: "Bahía de Las Águilas", comentario: "Pendiente." },
+        { lat: 18.178501710547327, lng: -72.54537471811965, titulo: "Cabo Jacmel", comentario: "Pendiente." },
+        { lat: 18.39189119735582, lng: -73.3416776906585, titulo: "Península de Tiburón", comentario: "Pendiente." },
+        { lat: 18.078632835421335, lng: -73.62325703844466, titulo: "Isla de La Vaca", comentario: "Pendiente." },
+        { lat: 18.618622987637483, lng: -73.73570091926777, titulo: "Isla de Cayemite", comentario: "Pendiente." },
+        { lat: 18.83630504530466, lng: -73.0118022199312, titulo: "Isla de Gonaive", comentario: "Pendiente." },
+        { lat: 19.163115128402698, lng: -73.05940870692616, titulo: "Golfo de Gonaive", comentario: "Pendiente." },
+        { lat: 20.04580561027507, lng: -72.76411223048235, titulo: "Isla de La Tortuga", comentario: "Pendiente." },
+        { lat: 18.40384906773233, lng: -75.01368694612037, titulo: "Isla de Navassa", comentario: "Pendiente." },
+        { lat: 19.681199070393557, lng: -71.84854563483924, titulo: "Bahía del Fuerte Libertad", comentario: "Pendiente." },
+        { lat: 18.22985799131059, lng: -70.15892961940402, titulo: "Punta Palenque", comentario: "Pendiente." },
+        { lat: 19.80713370508267, lng: -73.17169502428142, titulo: "Península del Noroeste", comentario: "Pendiente." }
     ];
 
+    const rios = [
+        { nombre: "Río Haina", coordenadas: [18.418738687509286, -70.01889335090772], comentario: "Zona influenciada por actividad industrial y portuaria." },
+        { nombre: "Río Ozama", coordenadas: [18.47100959803709, -69.87952116396366], comentario: "Principal río del Gran Santo Domingo, con alta presión urbana." },
+        { nombre: "Río Higuamo", coordenadas: [18.441846417578624, -69.31513488241391], comentario: "Importante ecosistema estuarino asociado a manglares." },
+        { nombre: "Río Yuma", coordenadas: [18.380289609312758, -68.60400614146857], comentario: "Importante ecosistema estuarino asociado a manglares." },
+        { nombre: "Río Soco", coordenadas: [18.45284572589469, -69.20459530053246], comentario: "Área vinculada a actividades agrícolas y turísticas." },
+        { nombre: "Río Cumayasa", coordenadas: [18.395102801632156, -69.08395288246885], comentario: "Desembocadura con relevancia ecológica y turística." },
+        { nombre: "Río Romana", coordenadas: [18.41560433561995, -68.95970149415454], comentario: "Zona costera cercana a actividades urbanas e industriales." },
+        { nombre: "Río Chavón", coordenadas: [18.41560433561995, -68.95970149415454], comentario: "Pendiente." },
+        { nombre: "Río Yubazo", coordenadas: [18.371511601407573, -70.0509985058354], comentario: "Pendiente." },
+        { nombre: "Río Nizao", coordenadas: [18.23396719498754, -70.18001230198149], comentario: "Pendiente." },
+        { nombre: "Río Baní", coordenadas: [18.23071602357976, -70.3027528988861], comentario: "Pendiente." },
+        { nombre: "Río Ocoa", coordenadas: [18.27826401773125, -70.57991107214782], comentario: "Pendiente." },
+        { nombre: "Río Tábara", coordenadas: [18.354562720666255, -70.80392322281966], comentario: "Pendiente." },
+        { nombre: "Río Yaque del Sur", coordenadas: [18.262474362655073, -71.1109932741054], comentario: "Pendiente." },
+        { nombre: "Río Nizaito", coordenadas: [17.99148451984096, -71.16008625766224], comentario: "Pendiente." },
+        { nombre: "Laguna de Oviedo", coordenadas: [17.75911317457582, -71.37095253492022], comentario: "Pendiente." },
+        { nombre: "Río Pedernales", coordenadas: [18.038173652593677, -71.7567698006091], comentario: "Pendiente." },
+        { nombre: "Río Dajabón o Masacre", coordenadas: [19.701825740555492, -71.75873977757455], comentario: "Pendiente." },
+        { nombre: "Río Yaque del Norte", coordenadas: [19.839728113279044, -71.6833011411709], comentario: "Pendiente." },
+        { nombre: "Río Bajabonico", coordenadas: [19.877177210364582, -71.08394427799524], comentario: "Pendiente." },
+        { nombre: "Río San Marcos", coordenadas: [19.803169435257498, -70.70666907380173], comentario: "Pendiente." },     
+        { nombre: "Río Muñoz", coordenadas: [19.763551680325218, -70.63127045711931], comentario: "Pendiente." },
+        { nombre: "Río San Camú", coordenadas: [19.755242034291847, -70.58817358306204], comentario: "Pendiente." },
+        { nombre: "Río Sosúa", coordenadas: [19.752416772245034, -70.52628495123976], comentario: "Pendiente." },
+        { nombre: "Río Yásica", coordenadas: [19.710754583135678, -70.3705538568525], comentario: "Pendiente." },
+        { nombre: "Río Joba", coordenadas: [19.641075657346235, -70.26967742017386], comentario: "Pendiente." },
+        { nombre: "Río Piedras", coordenadas: [19.63137155685492, -70.20180275820229], comentario: "Pendiente." },
+        { nombre: "Río San Juan norte", coordenadas: [19.637957644129028, -70.0833650099482], comentario: "Pendiente." },
+        { nombre: "Río Bacuí", coordenadas: [19.494020637625383, -69.87282836124481], comentario: "Pendiente." },
+        { nombre: "Río Boba", coordenadas: [19.462499346539776, -69.87371580465476], comentario: "Pendiente." },
+        { nombre: "Río Nagua", coordenadas: [19.368009107884223, -69.83949802376445], comentario: "Pendiente." },
+        { nombre: "Río El Limón", coordenadas: [19.313967555485515, -69.42645661389766], comentario: "Pendiente." },
+        { nombre: "Río Yuna", coordenadas: [19.19776839638988, -69.624894713641], comentario: "Pendiente." },
+        { nombre: "Río Barracote", coordenadas: [19.109655656984792, -69.62632893868452], comentario: "Pendiente." },
+        { nombre: "Río Yabón", coordenadas: [19.07601717661294, -69.38636398028599], comentario: "Pendiente." },
+        { nombre: "Río Catalina", coordenadas: [19.021369574525398, -69.24625615262343], comentario: "Pendiente." },
+        { nombre: "Río Maguá", coordenadas: [19.01337578031481, -69.20699964521685], comentario: "Pendiente." },
+        { nombre: "Río Yeguada", coordenadas: [18.987512439217085, -69.04063479419878], comentario: "Pendiente." },
+        { nombre: "Río Jobero", coordenadas: [18.986207125476977, -69.01985989369223], comentario: "Pendiente." },
+        { nombre: "Río Maimón este", coordenadas: [18.844461209964066, -68.62188989028091], comentario: "Pendiente." },
+        { nombre: "Río Anamuya", coordenadas: [18.78340222462785, -68.55207686614445], comentario: "Pendiente." },
+        { nombre: "Río Artibonito", coordenadas: [19.238217604861383, -72.78031967248685], comentario: "Pendiente." },
+        { nombre: "Río Mapou", coordenadas: [19.755103625864546, -72.20088615984051], comentario: "Pendiente." },
+        { nombre: "Río Grande del norte", coordenadas: [19.751717929564453, -72.13422759279226], comentario: "Pendiente." },
+        { nombre: "Río Momance", coordenadas: [18.563783573425873, -72.55963317764082], comentario: "Pendiente." },
+        { nombre: "Río Ravine", coordenadas: [18.180231613120736, -73.76102779475907], comentario: "Pendiente." }    
+    ];
 
+    // --- GRUPOS DE CAPAS EXCLUSIVOS ---
+    const layerAccidentesRD = L.layerGroup().addTo(map);
+    const layerAccidentesHAITI = L.layerGroup().addTo(map);
+    const layerRiosRD = L.layerGroup().addTo(map);
+    const layerRiosHAITI = L.layerGroup().addTo(map);
 
-// Lista de ríos con coordenadas y comentario personalizado **********************************************
-// Lista de ríos con coordenadas y comentario personalizado
-var rios = [
-    {
-        nombre: "Río Haina",
-        coordenadas: [18.418738687509286, -70.01889335090772],
-        comentario: "Zona influenciada por actividad industrial y portuaria."
-    },
-   {
-        nombre: "Río Ozama",
-        coordenadas: [18.47100959803709, -69.87952116396366],
-        comentario: "Principal río del Gran Santo Domingo, con alta presión urbana."
-    },
-    {
-        nombre: "Río Higuamo",
-        coordenadas: [18.441846417578624, -69.31513488241391],
-        comentario: "Importante ecosistema estuarino asociado a manglares."
-    },
-    {
-        nombre: "Río Yuma",
-        coordenadas: [18.380289609312758, -68.60400614146857],
-        comentario: "Importante ecosistema estuarino asociado a manglares."
-    },
-    {
-        nombre: "Río Soco",
-        coordenadas: [18.45284572589469, -69.20459530053246],
-        comentario: "Área vinculada a actividades agrícolas y turísticas."
-    },
-    {
-        nombre: "Río Cumayasa",
-        coordenadas: [18.395102801632156, -69.08395288246885],
-        comentario: "Desembocadura con relevancia ecológica y turística."
-    },
-    {
-        nombre: "Río Romana",
-        coordenadas: [18.41560433561995, -68.95970149415454],
-        comentario: "Zona costera cercana a actividades urbanas e industriales."
-    },
-   {
-        nombre: "Río Chavón",
-        coordenadas: [18.41560433561995, -68.95970149415454],
-        comentario: "Pendiente."
-    },
-    {
-        nombre: "Río Yubazo",
-        coordenadas: [18.371511601407573, -70.0509985058354],
-        comentario: "Pendiente."
-    },
-    {
-        nombre: "Río Nizao",
-        coordenadas: [18.23396719498754, -70.18001230198149],
-        comentario: "Pendiente."
-    },
-    {
-        nombre: "Río Baní",
-        coordenadas: [18.23071602357976, -70.3027528988861],
-        comentario: "Pendiente."
-    },
-    {
-        nombre: "Río Ocoa",
-        coordenadas: [18.27826401773125, -70.57991107214782],
-        comentario: "Pendiente."
-    },
-    {
-        nombre: "Río Tábara",
-        coordenadas: [18.354562720666255, -70.80392322281966],
-        comentario: "Pendiente."
-    },
-    {
-        nombre: "Río Yaque del Sur",
-        coordenadas: [18.262474362655073, -71.1109932741054],
-        comentario: "Pendiente."
-    },
-    {
-        nombre: "Río Nizaito",
-        coordenadas: [17.99148451984096, -71.16008625766224],
-        comentario: "Pendiente."
-    },
-    {
-        nombre: "Laguna de Oviedo",
-        coordenadas: [17.75911317457582, -71.37095253492022],
-        comentario: "Pendiente."
-    },
-    {
-        nombre: "Río Pedernales",
-        coordenadas: [18.038173652593677, -71.7567698006091],
-        comentario: "Pendiente."
-    },
-    {
-        nombre: "Río Dajabón o Masacre",
-        coordenadas: [19.701825740555492, -71.75873977757455],
-        comentario: "Pendiente."
-    },
-    {
-        nombre: "Río Yaque del Norte",
-        coordenadas: [19.839728113279044, -71.6833011411709],
-        comentario: "Pendiente."
-    },
-    {
-        nombre: "Río Bajabonico",
-        coordenadas: [19.877177210364582, -71.08394427799524],
-        comentario: "Pendiente."
-    },
-    {
-        nombre: "Río San Marcos",
-        coordenadas: [19.803169435257498, -70.70666907380173],
-        comentario: "Pendiente."
-    },     
-    {
-        nombre: "Río Muñoz",
-        coordenadas: [19.763551680325218, -70.63127045711931],
-        comentario: "Pendiente."
-    },
-    {
-        nombre: "Río San Camú",
-        coordenadas: [19.755242034291847, -70.58817358306204],
-        comentario: "Pendiente."
-    },
-    {
-        nombre: "Río Sosúa",
-        coordenadas: [19.752416772245034, -70.52628495123976],
-        comentario: "Pendiente."
-    },
-    {
-        nombre: "Río Yásica",
-        coordenadas: [19.710754583135678, -70.3705538568525],
-        comentario: "Pendiente."
-    },
-    {
-        nombre: "Río Joba",
-        coordenadas: [19.641075657346235, -70.26967742017386],
-        comentario: "Pendiente."
-    },
-    {
-        nombre: "Río Piedras",
-        coordenadas: [19.63137155685492, -70.20180275820229],
-        comentario: "Pendiente."
-    },
-    {
-        nombre: "Río San Juan norte",
-        coordenadas: [19.637957644129028, -70.0833650099482],
-        comentario: "Pendiente."
-    },
-    {
-        nombre: "Río Bacuí",
-        coordenadas: [19.494020637625383, -69.87282836124481],
-        comentario: "Pendiente."
-    },
-    {
-        nombre: "Río Boba",
-        coordenadas: [19.462499346539776, -69.87371580465476],
-        comentario: "Pendiente."
-    },
-    {
-        nombre: "Río Nagua",
-        coordenadas: [19.368009107884223, -69.83949802376445],
-        comentario: "Pendiente."
-    },
-    {
-        nombre: "Río El Limón",
-        coordenadas: [19.313967555485515, -69.42645661389766],
-        comentario: "Pendiente."
-    },
-        {
-        nombre: "Río Yuna",
-        coordenadas: [19.19776839638988, -69.624894713641],
-        comentario: "Pendiente."
-    },
-    {
-        nombre: "Río Barracote",
-        coordenadas: [19.109655656984792, -69.62632893868452],
-        comentario: "Pendiente."
-    },
-    {
-        nombre: "Río Yabón",
-        coordenadas: [19.07601717661294, -69.38636398028599],
-        comentario: "Pendiente."
-    },
-    {
-        nombre: "Río Catalina",
-        coordenadas: [19.021369574525398, -69.24625615262343],
-        comentario: "Pendiente."
-    },
-    {
-        nombre: "Río Maguá",
-        coordenadas: [19.01337578031481, -69.20699964521685],
-        comentario: "Pendiente."
-    },
-    {
-        nombre: "Río Yeguada",
-        coordenadas: [18.987512439217085, -69.04063479419878],
-        comentario: "Pendiente."
-    },
-    {
-        nombre: "Río Jobero",
-        coordenadas: [18.986207125476977, -69.01985989369223],
-        comentario: "Pendiente."
-    },
-    {
-        nombre: "Río Maimón este",
-        coordenadas: [18.844461209964066, -68.62188989028091],
-        comentario: "Pendiente."
-    },
-    {
-        nombre: "Río Anamuya",
-        coordenadas: [18.78340222462785, -68.55207686614445],
-        comentario: "Pendiente."
-    },
-    {
-        nombre: "Río Artibonito",
-        coordenadas: [19.238217604861383, -72.78031967248685],
-        comentario: "Pendiente."
-    },
-    {
-        nombre: "Río Mapou",
-        coordenadas: [19.755103625864546, -72.20088615984051],
-        comentario: "Pendiente."
-    },
-    {
-        nombre: "Río Grande del norte",
-        coordenadas: [19.751717929564453, -72.13422759279226],
-        comentario: "Pendiente."
-    },
-    {
-        nombre: "Río Momance",
-        coordenadas: [18.563783573425873, -72.55963317764082],
-        comentario: "Pendiente."
-    },
-    {
-        nombre: "Río Ravine",
-        coordenadas: [18.180231613120736, -73.76102779475907],
-        comentario: "Pendiente."
-    }    
+    // --- HELPER DE IDENTIFICACIÓN ---
+    function esHaiti(lng, titulo) {
+        const titulosHaiti = [
+            "Cabo Jacmel", "Península de Tiburón", "Isla de La Vaca", 
+            "Isla de Cayemite", "Isla de Gonaive", "Golfo de Gonaive", 
+            "Isla de La Tortuga", "Isla de Navassa", "Bahía del Fuerte Libertad", 
+            "Península del Noroeste"
+        ];
+        return titulosHaiti.includes(titulo) || lng < -71.84;
+    }
 
+    function esRioHaiti(nombre) {
+        const riosHaiti = ["Río Artibonito", "Río Mapou", "Río Grande del norte", "Río Momance", "Río Ravine"];
+        return riosHaiti.includes(nombre);
+    }
 
-];
+    // --- GENERACIÓN DE APUNTADORES SVG VECTORIALES ---
+    function crearApuntadorSVG(colorHex) {
+        return L.divIcon({
+            className: 'custom-svg-marker',
+            html: `
+                <svg width="26" height="36" viewBox="0 0 24 30" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0px 3px 4px rgba(0,0,0,0.45));">
+                    <path d="M12 0C5.37 0 0 5.37 0 12c0 8.25 10.5 16.5 11.13 17.13a1.23 1.23 0 0 0 1.74 0C13.5 28.5 24 20.25 24 12c0-6.63-5.37-12-12-12zm0 16.5a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9z" fill="${colorHex}"/>
+                    <circle cx="12" cy="12" r="4.5" fill="#FFFFFF"/>
+                </svg>
+            `,
+            iconSize: [26, 36],
+            iconAnchor: [13, 36],
+            popupAnchor: [0, -32]
+        });
+    }
 
-// Función para ajustar tamaño según zoom
-function obtenerRadio() {
-    let zoom = map.getZoom();
+    // Apuntadores solicitados con colores hexadecimales exactos
+    const iconoRD = crearApuntadorSVG('#2A82CA'); // Apuntador Azul
+    const iconoHaiti = crearApuntadorSVG('#6633CC'); // Apuntador Morado
 
-    if (zoom <= 8) return 5;
-    if (zoom <= 10) return 8;
-    if (zoom <= 12) return 12;
-    if (zoom <= 14) return 18;
-    return 25;
-}
-
-// Crear marcadores circulares
-var circulos = [];
-
-rios.forEach(function(rio) {
-    let circulo = L.circleMarker(rio.coordenadas, {
-        radius: obtenerRadio(),
-        color: 'red',
-        fillColor: '#f03',
-        fillOpacity: 0.5,
-        weight: 2
-    })
-    .addTo(map)
-    .bindPopup(`
-        <h3>${rio.nombre}</h3>
-        <p>${rio.comentario}</p>
-    `);
-
-    circulos.push(circulo);
-});
-
-// Actualizar tamaño al cambiar el zoom
-map.on('zoomend', function() {
-    let nuevoRadio = obtenerRadio();
-
-    circulos.forEach(function(circulo) {
-        circulo.setRadius(nuevoRadio);
-    });
-});
-//************************************************************************************
-
-
-    // Al haber una sola capa, los marcadores se añaden directamente al mapa
+    // Inyectar Accidentes Costeros en sus respectivas capas
     puntos.forEach(p => {
-        const m = L.marker([p.lat, p.lng]).addTo(map);
         const popupContent = `
-            <div style="text-align:center;">
-                <strong style="font-size:1rem;">📍 ${p.titulo}</strong>
-                <span class="popup-comment">${p.comentario}</span>
+            <div style="text-align: center;">
+                <strong style="font-size: 0.95rem; color: #1a365d; display: block; margin-bottom: 4px;">📍 ${p.titulo}</strong>
+                <span style="font-size: 0.85rem; color: #666; font-style: italic;">${p.comentario}</span>
             </div>`;
-        m.bindPopup(popupContent);
+
+        if (esHaiti(p.lng, p.titulo)) {
+            L.marker([p.lat, p.lng], { icon: iconoHaiti }).bindPopup(popupContent).addTo(layerAccidentesHAITI);
+        } else {
+            L.marker([p.lat, p.lng], { icon: iconoRD }).bindPopup(popupContent).addTo(layerAccidentesRD);
+        }
     });
 
+    // --- CONTROL DE TAMAÑO DINÁMICO DE RÍOS ---
+    function calcularRadioRios(zoom) {
+        if (zoom <= 7) return 4;
+        if (zoom <= 9) return 6;
+        if (zoom <= 11) return 9;
+        if (zoom <= 13) return 13;
+        return 18;
+    }
+
+    // Inyectar Ríos Circulares en sus capas correspondientes
+    const listaCirculosRios = [];
+
+    rios.forEach(rio => {
+        const esH = esRioHaiti(rio.nombre);
+        const colorRío = esH ? '#FF6600' : '#FF0000'; // Naranja para Haití, Rojo para RD
+        const capaDestino = esH ? layerRiosHAITI : layerRiosRD;
+
+        const circulo = L.circleMarker(rio.coordenadas, {
+            radius: calcularRadioRios(map.getZoom()),
+            color: '#FFFFFF',
+            fillColor: colorRío,
+            fillOpacity: 0.85,
+            weight: 1.5
+        })
+        .bindPopup(`
+            <div style="text-align: center;">
+                <strong style="font-size: 0.95rem; color: #8c0000; display: block; margin-bottom: 4px;">🌊 ${rio.nombre}</strong>
+                <span style="font-size: 0.85rem; color: #666; font-style: italic;">${rio.comentario}</span>
+            </div>
+        `)
+        .addTo(capaDestino);
+
+        listaCirculosRios.push({ marker: circulo });
+    });
+
+    // Actualizar radio de círculos al cambiar de zoom
+    map.on('zoomend', () => {
+        const nuevoRadio = calcularRadioRios(map.getZoom());
+        listaCirculosRios.forEach(item => {
+            item.marker.setRadius(nuevoRadio);
+        });
+    });
+
+    // --- GENERACIÓN DE LEYENDA DESPLEGABLE INTERACTIVA ---
+    const controlLeyendaCapas = L.control({ position: 'topright' });
+
+    controlLeyendaCapas.onAdd = function() {
+        const div = L.DomUtil.create('div', 'custom-legend-panel');
+        
+        // Estructura semántica colapsable
+        div.innerHTML = `
+            <details open>
+                <summary>🗺️ Capas y Leyenda</summary>
+                <div class="legend-list">
+                    <label class="legend-item">
+                        <input type="checkbox" id="chk-acc-rd" checked />
+                        <span class="symbol-marker-blue"></span>
+                        <span class="legend-label-text">Accidentes costeros RD</span>
+                    </label>
+                    <label class="legend-item">
+                        <input type="checkbox" id="chk-acc-ht" checked />
+                        <span class="symbol-marker-purple"></span>
+                        <span class="legend-label-text">Accidentes costeros HAITÍ</span>
+                    </label>
+                    <label class="legend-item">
+                        <input type="checkbox" id="chk-rios-rd" checked />
+                        <span class="symbol-circle-red"></span>
+                        <span class="legend-label-text">Desembocadura ríos RD</span>
+                    </label>
+                    <label class="legend-item">
+                        <input type="checkbox" id="chk-rios-ht" checked />
+                        <span class="symbol-circle-orange"></span>
+                        <span class="legend-label-text">Desembocadura ríos HAITÍ</span>
+                    </label>
+                </div>
+            </details>
+        `;
+        
+        // Prevenir eventos de arrastre o clic sobre el mapa debajo de la leyenda
+        L.DomEvent.disableClickPropagation(div);
+        L.DomEvent.disableScrollPropagation(div);
+        
+        return div;
+    };
+
+    controlLeyendaCapas.addTo(map);
+
+    // --- GESTIÓN DE CHECKBOXES INTERACTIVOS DE CAPAS ---
+    document.getElementById('chk-acc-rd').addEventListener('change', function(e) {
+        if (e.target.checked) map.addLayer(layerAccidentesRD);
+        else map.removeLayer(layerAccidentesRD);
+    });
+
+    document.getElementById('chk-acc-ht').addEventListener('change', function(e) {
+        if (e.target.checked) map.addLayer(layerAccidentesHAITI);
+        else map.removeLayer(layerAccidentesHAITI);
+    });
+
+    document.getElementById('chk-rios-rd').addEventListener('change', function(e) {
+        if (e.target.checked) map.addLayer(layerRiosRD);
+        else map.removeLayer(layerRiosRD);
+    });
+
+    document.getElementById('chk-rios-ht').addEventListener('change', function(e) {
+        if (e.target.checked) map.addLayer(layerRiosHAITI);
+        else map.removeLayer(layerRiosHAITI);
+    });
+
+    // --- CONTROL DE RESPONSIVIDAD Y REDIMENSIÓN ---
     window.addEventListener('load', () => {
-        setTimeout(moveScale, 300);
+        setTimeout(moveScale, 200);
     });
     
     window.addEventListener('resize', () => {
