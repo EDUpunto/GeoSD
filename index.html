@@ -384,11 +384,20 @@
         zoomSnap: 0.5
     }).setView(center, isMobile ? 6.8 : 8.5);
 
-    // Servidor de mapas elegante
-    L.tileLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', {
+    // Capas base
+    const capaCalles = L.tileLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', {
         maxZoom: 18,
         attribution: 'CyclOSM'
-    }).addTo(map);
+    });
+
+    const capaSatelite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        maxZoom: 19,
+        attribution: 'Esri World Imagery'
+    });
+
+    // Capa activa por defecto
+    let capaBaseActual = capaCalles;
+    capaCalles.addTo(map);
 
     // Agrega el control de zoom en la parte inferior derecha para evitar colisiones móviles
     L.control.zoom({ position: 'bottomright' }).addTo(map);
@@ -456,8 +465,8 @@
 { lat: 18.97395623165452, lng: -68.77597515880271, titulo: "Punta Nisibón", comentario: "Punta con playa y comunidad pesquera.<br>18.97395, -68.77597" },
 { lat: 18.897348393448915, lng: -68.66550477348369, titulo: "Punta Puerto Escondido", comentario: "Punta rocosa con cala escondida.<br>18.89734, -68.66550" },
 { lat: 18.779398628458928, lng: -68.52739802435059, titulo: "Punta Macao", comentario: "Punta con playa virgen y fuerte oleaje.<br>18.77939, -68.52739" },
-{ lat: 18.651503279070845, lng: -68.37788523013502, titulo: "Laguna de Bávaro", comentario: "Laguna natural cerca de complejos hoteleros.<br>18.65150, -68.37788" },
-{ lat: 18.616638722806258, lng: -68.32548165449994, titulo: "Cabo Engaño", comentario: "Extremo este de la isla con faro.<br>18.61663, -68.32548" },
+{ lat: 18.646583732035133, lng: -68.3741838558596, titulo: "Laguna de Bávaro", comentario: "Laguna natural cerca de complejos hoteleros.<br>18.64658, -68.37418" },
+{ lat: 18.616826598604707, lng: -68.32514736697995, titulo: "Cabo Engaño", comentario: "Extremo este de la isla con faro.<br>18.61682, -68.32514" },
 { lat: 18.348163794270047, lng: -68.4685534525929, titulo: "Cabo San Rafael", comentario: "Cabo con arrecifes y playas vírgenes.<br>18.34816, -68.46855" },
 { lat: 18.362153526738698, lng: -68.59699247250697, titulo: "Bahía de Yuma", comentario: "Bahía cercana a desembocadura del río Yuma.<br>18.36215, -68.59699" },
 { lat: 18.21319388996826, lng: -68.64606962526226, titulo: "Punta El Algibe", comentario: "Punta rocosa en la Isla Saona.<br>18.21319, -68.64606" },
@@ -695,6 +704,13 @@ const rios = [
                         <span class="symbol-circle-orange"></span>
                         <span class="legend-label-text">Desembocadura ríos HAITÍ</span>
                     </label>
+                    <div style="border-top: 1px solid rgba(255,255,255,0.15); margin-top: 8px; padding-top: 10px;">
+                        <div style="font-size:0.78rem; color:rgba(255,255,255,0.6); margin-bottom:6px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">Vista del mapa</div>
+                        <div style="display:flex; gap:6px;">
+                            <button id="btn-calles" onclick="cambiarVista('calles')" style="flex:1; padding:5px 8px; border-radius:6px; border:1px solid rgba(255,255,255,0.3); background:rgba(255,179,71,0.9); color:#000; font-size:0.75rem; font-weight:700; cursor:pointer;">🗺️ Calles</button>
+                            <button id="btn-satelite" onclick="cambiarVista('satelite')" style="flex:1; padding:5px 8px; border-radius:6px; border:1px solid rgba(255,255,255,0.2); background:rgba(255,255,255,0.1); color:#fff; font-size:0.75rem; font-weight:600; cursor:pointer;">🛰️ Satélite</button>
+                        </div>
+                    </div>
                 </div>
             </details>
         `;
@@ -728,6 +744,34 @@ const rios = [
         if (e.target.checked) map.addLayer(layerRiosHAITI);
         else map.removeLayer(layerRiosHAITI);
     });
+
+    // --- CAMBIO DE VISTA BASE ---
+    function cambiarVista(modo) {
+        map.removeLayer(capaBaseActual);
+        if (modo === 'satelite') {
+            capaBaseActual = capaSatelite;
+            document.getElementById('btn-satelite').style.background = 'rgba(255,179,71,0.9)';
+            document.getElementById('btn-satelite').style.color = '#000';
+            document.getElementById('btn-satelite').style.fontWeight = '700';
+            document.getElementById('btn-calles').style.background = 'rgba(255,255,255,0.1)';
+            document.getElementById('btn-calles').style.color = '#fff';
+            document.getElementById('btn-calles').style.fontWeight = '600';
+        } else {
+            capaBaseActual = capaCalles;
+            document.getElementById('btn-calles').style.background = 'rgba(255,179,71,0.9)';
+            document.getElementById('btn-calles').style.color = '#000';
+            document.getElementById('btn-calles').style.fontWeight = '700';
+            document.getElementById('btn-satelite').style.background = 'rgba(255,255,255,0.1)';
+            document.getElementById('btn-satelite').style.color = '#fff';
+            document.getElementById('btn-satelite').style.fontWeight = '600';
+        }
+        capaBaseActual.addTo(map);
+        // Las capas de datos deben quedar encima
+        map.removeLayer(layerAccidentesRD); map.addLayer(layerAccidentesRD);
+        map.removeLayer(layerAccidentesHAITI); map.addLayer(layerAccidentesHAITI);
+        map.removeLayer(layerRiosRD); map.addLayer(layerRiosRD);
+        map.removeLayer(layerRiosHAITI); map.addLayer(layerRiosHAITI);
+    }
 
     // --- CONTROL DE RESPONSIVIDAD Y REDIMENSIÓN ---
     window.addEventListener('load', () => {
